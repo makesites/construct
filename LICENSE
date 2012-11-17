@@ -1,0 +1,32 @@
+
+Copyright © 2012 Makesites.org
+
+Construct.js is free[1] & open source[2] software: you can redistribute it 
+and/or modify it under the terms of either the GNU Affero General Public 
+License Version 3 or later (the "AGPL")[3] or the Mozilla Public License 
+Version 2.0 or later (the "MPL")[4], at your discretion.  
+
+Portion of the codebase is third-party software and may have been released 
+under different terms, as stated in each individual case. 
+
+To distribute your own commercial or non-comercial application, you may 
+obtain a copy of the each license from the reference URLs [3] & [4]. Please 
+read the specific rights and limitations the software is subject to, applied 
+by the terms of each license.
+
+You are permitted to publicly attribute Construct.js in your application. 
+You are not granted rights or licenses to the trademarks of the Makesites 
+Organization or any other party, including without limitation to the 
+K&D Interactive name or logo.
+
+Construct.js is distributed in the hope that it will be useful, but on an 
+"AS IS" basis WITHOUT ANY WARRANTY OF ANY KIND; without even the implied 
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+References: 
+
+[1] http://www.gnu.org/philosophy/free-sw.html
+[2] http://www.opensource.org/docs/definition.php
+[3] Mozilla Public License: http://www.mozilla.org/MPL/2.0/
+[4] Affero General Public License: http://www.gnu.org/licenses/agpl.html
