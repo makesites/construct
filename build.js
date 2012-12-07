@@ -14,8 +14,7 @@ var _cli = require('commander'),
  // - concatinate all files
 concat({
     src : [
-		'lib/config.js',
-		'lib/init.js',
+		'lib/construct.js',
 		'lib/models.js',
 		'lib/views.js',
 		'lib/controllers.js'
@@ -43,11 +42,14 @@ function concat(opts) {
 	var lib = fileList.map(function(filePath){
             return _fs.readFileSync(filePath, FILE_ENCODING);
         });
+		
+	var wrapper = _fs.readFileSync('lib/init.js', FILE_ENCODING);
 	
-	var template = _handlebars.compile( lib.join(EOL) );
+	var template = _handlebars.compile( wrapper );
 	 
 	//reuse package.json data and add build date
 	var data = JSON.parse( _fs.readFileSync('package.json', FILE_ENCODING) );
+	data.lib = lib.join(EOL);
 	data.build_date = (new Date()).toUTCString();
 	
 	// Save uncompressed file

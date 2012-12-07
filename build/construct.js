@@ -1,3 +1,13 @@
+/* 
+ * Construct.js : Constructor
+ * 
+ * @author Makis Tracend
+ * @cc_on Copyright © 2012 Makesites.org
+ *
+ * @license Dual-licensed under the MPL and AGPL: 
+ * http://github.com/constructjs/construct/LICENSE
+ */
+
 (function(){
 		
 	config = {
@@ -74,15 +84,6 @@
 	};
 
 })()
-/* 
- * Construct.js : Constructor
- * 
- * @author Makis Tracend
- * @cc_on Copyright © 2012 Makesites.org
- *
- * @license Dual-licensed under the MPL and AGPL: 
- * http://github.com/constructjs/construct/LICENSE
- */
 
 (function (root, factory) {
   if (typeof exports === 'object') {
@@ -99,7 +100,8 @@
   } 
 }(this, function ($, _, Backbone) {
 	
-	
+
+
 	construct = function( config ){
 		// containers
 		this.loop = [];
@@ -118,7 +120,7 @@
 	
 	construct.init = function(fn){
 		// execute when construct is initialized
-		console.log("init");
+		//console.log(&quot;init&quot;);
 		
 		construct.callback = fn;
 	};
@@ -147,7 +149,7 @@
 	
 	//construct = new Construct();
 	
-//require(["backbone.app", "jquery.three"], function(){ 
+//require([&quot;backbone.app&quot;, &quot;jquery.three&quot;], function(){ 
 
 	APP.Models.User = APP.Model.extend({
 		defaults: {
@@ -171,7 +173,7 @@
 	
 //});
 
-//require(["backbone.app", "jquery.three"], function(){ 
+//require([&quot;backbone.app&quot;, &quot;jquery.three&quot;], function(){ 
 
 
 	APP.Mesh = Backbone.View.extend({ 
@@ -231,14 +233,14 @@
 	APP.Views.Asset = APP.View.extend({
 	
 		// user jquery-three for rendering
-		// attach dat.gui view if editable & user has admin rights
+		// attach dat.gui view if editable &amp; user has admin rights
 	});
 	
 	
 	
 //});
 
-//require(["backbone.app", "jquery.three"], function(){ 
+//require([&quot;backbone.app&quot;, &quot;jquery.three&quot;], function(){ 
 
 	APP.Routers.User = APP.Router.extend({
 		initialize: function(){
@@ -248,5 +250,5 @@
 	
 //});
 
-	
+
  }))($ || window.jQuery || window.ender, _, Backbone);
