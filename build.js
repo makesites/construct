@@ -14,6 +14,7 @@ var _cli = require('commander'),
  // - concatinate all files
 concat({
     src : [
+		'lib/config.js',
 		'lib/construct.js',
 		'lib/models.js',
 		'lib/views.js',

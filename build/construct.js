@@ -9,19 +9,29 @@
  */
 
 (function (root, factory) {
-  if (typeof exports === 'object') {
+	if (typeof exports === 'object') {
+		
+		var jquery_three = require('jquery.three');
+		var backbone_app = require('backbone.app');
+		
+		module.exports = factory(jquery_three, backbone_app);
+		
+	} else if (typeof define === 'function' && define.amd) {
+	
+		define(['jquery.three', 'backbone.app'], factory);
 
-    var jquery_three = require('jquery.three');
-    var backbone_app = require('backbone.app');
-
-    module.exports = factory(jquery_three, backbone_app);
-
-  } else if (typeof define === 'function' && define.amd) {
-
-    define(['jquery.three', 'backbone.app'], factory);
-
-  } 
+	} else {
+		var jquery = $ || root.jQuery || root.ender;
+		// Browser globals
+		factory(jquery, root._, root.Backbone, root.APP);
+	}
 }(this, function ($, _, Backbone) {
+
+
+// new containers
+APP.Meshes = {};
+APP.Sprites = {};
+
 
 
 	construct = function( config ){
@@ -234,7 +244,7 @@
 //});
 
 //require(["backbone.app", "jquery.three"], function(){ 
-
+	
 	APP.Routers.User = APP.Router.extend({
 		initialize: function(){
 		
@@ -244,4 +254,4 @@
 //});
 
 
- }))($ || window.jQuery || window.ender, _, Backbone);
+}));
