@@ -41,6 +41,11 @@ APP.Sprites = {};
 		// execute any config options passed in the init()
 		if( construct.callback ) construct.callback();
 		
+		// extend default config with supplied config
+		if( options.deps ) $.extend(true, construct.config, options.deps);
+		
+		require.config( construct.config );
+		
 		// initialize APP
 		var app = new APP();
 		window.app = app;
@@ -62,7 +67,7 @@ APP.Sprites = {};
 	construct.register = function( fn ){
 		
 		// add things in a the loop (if necessary)
-		if(fn.update){
+		if(fn && fn.update){
 			this.loop.push( fn.update );
 		}
 		
@@ -104,14 +109,16 @@ APP.Sprites = {};
 				"/assets/js/lib/backbone-min"
 			],
 			"three.js": [
-				"//cdnjs.cloudflare.com/ajax/libs/three.js/r53/three.min.js",
+				"//cdnjs.cloudflare.com/ajax/libs/three.js/r53/three.min",
 				"/assets/js/lib/three.min"
 			],
 			"backbone.app": [
-				"/assets/js/libs/backbone.app-min"
+				"https://raw.github.com/makesites/backbone-app/master/build/backbone.app", 
+				"/assets/js/lib/backbone.app"
 			],
 			"jquery.three": [
-				"/assets/js/libs/jquery.three-min"
+				"https://raw.github.com/makesites/jquery-three/master/build/jquery.three", 
+				"/assets/js/lib/jquery.three"
 			]
 		},
 		"shim": {
@@ -142,12 +149,18 @@ APP.Sprites = {};
 					"jquery",
 					"three.js"
 				]
+			}, 
+			"construct.input": {
+				"deps": [
+					"construct"
+				]
+			}, 
+			"construct.editor": {
+				"deps": [
+					"construct"
+				]
 			}
-		},
-		"deps": [
-			"backbone.app",
-			"jquery.three"
-		]
+		}
 	};
 	
 	//construct = new Construct();
