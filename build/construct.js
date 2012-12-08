@@ -34,17 +34,17 @@ APP.Sprites = {};
 
 
 
-	construct = function( config ){
+	construct = function( options ){
 		// containers
 		this.loop = [];
 		
+		// extend default config with supplied config
+		if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
+		 
+		require.config( construct.config );
+		
 		// execute any config options passed in the init()
 		if( construct.callback ) construct.callback();
-		
-		// extend default config with supplied config
-		if( options.deps ) $.extend(true, construct.config, options.deps);
-		
-		require.config( construct.config );
 		
 		// initialize APP
 		var app = new APP();
