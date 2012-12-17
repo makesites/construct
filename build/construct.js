@@ -28,10 +28,10 @@
 }(this, function ($, _, Backbone) {
 
 
-// new containers
+// extend APP namespace 
 APP.Meshes = {};
 APP.Sprites = {};
-
+APP.Actors = {};
 
 
 	construct = function( options ){
@@ -258,11 +258,14 @@ APP.Sprites = {};
 
 //require(["backbone.app", "jquery.three"], function(){ 
 	
+	
+	/*
 	APP.Routers.User = APP.Router.extend({
 		initialize: function(){
 		
 		}
 	});
+	*/
 	
 //});
 
