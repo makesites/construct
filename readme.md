@@ -1,19 +1,33 @@
 ## Construct.js
 
-Construct.js is a framework to create WebGL apps using a variety of open-source libs. 
+Construct.js is a framework  focused around WebGL apps that uses popular open source libraries as dependencies. It's aim is to enhance rapid development, while being a lightweight wrapper that preserves all the set conventions of the dependency libraries. 
 
-This is the main constructor library. 
+It's architecture is module based, inspired by node.js and specifically express. This is the main constructor library. Other add-on libraries are available in their own repos at [Construct.js on Github](http://github.com/constructjs)
+
 
 ## Features 
 
 * Modular architecture
+* Sinatra-like syntax
 * WebGL rendering
 * Gamepad / Touchscreen inputs
 
+
+## Dependencies 
+
 Construct acts more as a Dependency Injection framework, assisting the app and setting the ground work so all the needed classes are available for instantiation. 
 
-For that reason it is assumed that only one instance of the construct is required for any web page, and instantiation construct as a class is considered out of scope. 
+* Backbone.js 
+* Three.js 
+* jQuery
 
+## Usage 
+
+As a dependency injection framework, it is assumed that only one instance of the construct is required for any web page, and instantiation construct as a class is (currently) considered out of scope. 
+```
+construct.init();
+
+```
  
 
 
