@@ -27,10 +27,41 @@
 	}
 }(this, function ($, _, Backbone) {
 
+// Utils
+
+// - Internal promise method...
+var Promise = function(obj) {
+	var args = null;
+	var callbacks = [];
+	var resolved = false;
+	
+	this.add = function(callback) {
+		if (resolved) {
+			callback.apply(obj, args);
+		} else {
+			callbacks.push(callback);
+		}
+	};
+	
+	this.resolve = function() {
+		if (!resolved) {            
+			args = arguments;
+			resolved = true;
+			
+			var callback;
+			while (callback) {
+				callback.apply(obj, arguments);
+				callback = callbacks.shift();
+			}
+			
+			callbacks = null;
+		}
+	};
+};
+
 // main lib
+
 construct = function( options ){
-	// containers
-	this.loop = [];
 	
 	// extend default config with supplied config
 	if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
@@ -38,7 +69,8 @@ construct = function( options ){
 	require.config( construct.config );
 	
 	// execute any config options passed in the init()
-	if( construct.callback ) construct.callback();
+	construct.promise.resolve();
+	//if( construct.callback ) construct.init();
 	
 	// initialize APP
 	var app = new APP();
@@ -50,25 +82,33 @@ construct = function( options ){
 		
 };
 
-construct.init = function(fn){
+construct.loop = [];
+
+construct.init = function(){
 	// execute when construct is initialized
-	//console.log("init");
+	console.log("init");
 	
-	construct.callback = fn;
+	construct.promise.resolve();
 };
 	
 // stack middleware to be used
 construct.register = function( fn ){
 	
-	// add things in a the loop (if necessary)
+	// add things in the loop (if necessary)
 	if(fn && fn.update){
-		this.loop.push( fn.update );
+		construct.loop.push( fn.update );
 	}
 	
 };
 
-construct.configure = function(){
-	// initial setup
+// initial setup
+construct.configure = function( fn ){
+	
+	// validate function? 
+	console.log( this.promise ); 
+	console.log( "configure" ); 
+	
+	construct.promise.add( fn );
 	
 };
 
@@ -79,7 +119,7 @@ construct.update = function( fn ){
 	
 };
 
-//construct = new Construct();
+construct.promise = new Promise();
 
 
 // Dependencies
@@ -264,38 +304,6 @@ APP.Views.Asset = APP.View.extend({
 	*/
 	
 //});
-
-// Utils
-
-// - Internal promise method...
-Promise = function(obj) {
-	var args = null;
-	var callbacks = [];
-	var resolved = false;
-	
-	this.add = function(callback) {
-		if (resolved) {
-			callback.apply(obj, args);
-		} else {
-			callbacks.push(callback);
-		}
-	};
-	
-	this.resolve = function() {
-		if (!resolved) {            
-			args = arguments;
-			resolved = true;
-			
-			var callback;
-			while (callback) {
-				callback.apply(obj, arguments);
-				callback = callbacks.shift();
-			}
-			
-			callbacks = null;
-		}
-	};
-};
 
 
 }));
