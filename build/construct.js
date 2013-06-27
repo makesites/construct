@@ -48,7 +48,7 @@ var Promise = function(obj) {
 			args = arguments;
 			resolved = true;
 			
-			var callback;
+			var callback = callbacks.shift();
 			while (callback) {
 				callback.apply(obj, arguments);
 				callback = callbacks.shift();
@@ -61,39 +61,45 @@ var Promise = function(obj) {
 
 // main lib
 
-construct = function( options ){
+construct = function( options, callback ){
 	
 	// extend default config with supplied config
 	if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
-	 
-	require.config( construct.config );
+	
+	if( callback ) construct.callback = callback;
 	
 	// execute any config options passed in the init()
 	construct.promise.resolve();
-	//if( construct.callback ) construct.init();
+	// set the initi method
+	//construct.config.init = construct.init;
 	
-	// initialize APP
-	var app = new APP();
-	window.app = app;
-	// start backbone history
-	Backbone.history.start();
+	require.config( construct.config );
 	
-	return app;
-		
+	require( construct.config.deps, construct.init);
+	
 };
 
 construct.loop = [];
 
 construct.init = function(){
 	// execute when construct is initialized
-	console.log("init");
+	//console.log("init");
+		
+	// initialize APP
+	var app = new APP();
+	window.app = app;
+	// start backbone history
+	Backbone.history.start();
 	
-	construct.promise.resolve();
+	if( construct.callback ) construct.callback( app );
+	//return app;
+	
 };
 	
 // stack middleware to be used
 construct.register = function( fn ){
 	
+	//fn();
 	// add things in the loop (if necessary)
 	if(fn && fn.update){
 		construct.loop.push( fn.update );
@@ -105,9 +111,6 @@ construct.register = function( fn ){
 construct.configure = function( fn ){
 	
 	// validate function? 
-	console.log( this.promise ); 
-	console.log( "configure" ); 
-	
 	construct.promise.add( fn );
 	
 };
@@ -126,36 +129,28 @@ construct.promise = new Promise();
 construct.config = {
 	"paths": {
 		"jquery": [
-			"//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min",
-			"/assets/js/lib/jquery.min"
+			"//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min"
 		],
 		"json2": [
-			"//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.min",
-			"/assets/js/lib/json2.min"
+			"//cdnjs.cloudflare.com/ajax/libs/json2/20121008/json2.min"
 		],
 		"underscore": [
-			"//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min",
-			"/assets/js/lib/underscore-min"
+			"//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min"
 		],
 		"handlebars": [
-			"//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min",
-			"/assets/js/lib/handlebars.min"
+			"//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min"
 		],
 		"backbone": [
-			"//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min",
-			"/assets/js/lib/backbone-min"
+			"//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min"
 		],
 		"three.js": [
-			"//cdnjs.cloudflare.com/ajax/libs/three.js/r53/three.min",
-			"/assets/js/lib/three.min"
+			"//cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min"
 		],
 		"backbone.app": [
-			"https://raw.github.com/makesites/backbone-app/master/build/backbone.app", 
-			"/assets/js/lib/backbone.app"
+			"//rawgithub.com/makesites/backbone-app/0.9.0/build/backbone.app-min"
 		],
 		"jquery.three": [
-			"https://raw.github.com/makesites/jquery-three/master/build/jquery.three", 
-			"/assets/js/lib/jquery.three"
+			"//rawgithub.com/makesites/jquery-three/master/build/jquery.three"
 		]
 	},
 	"shim": {
@@ -163,10 +158,10 @@ construct.config = {
 			"deps": [
 				"json2"
 			]
-		}, 
+		},
 		"underscore": {
 			"exports": "_"
-		}, 
+		},
 		"backbone": {
 			"deps": [
 				"underscore",
@@ -186,12 +181,12 @@ construct.config = {
 				"jquery",
 				"three.js"
 			]
-		}, 
+		},
 		"construct.input": {
 			"deps": [
 				"construct"
 			]
-		}, 
+		},
 		"construct.editor": {
 			"deps": [
 				"construct"
