@@ -15,6 +15,7 @@ var _cli = require('commander'),
 concat({
 	src : [
 		'lib/utils.js',
+		'lib/locale.js',
 		'lib/construct.js',
 		'lib/api.js',
 		'lib/helpers.js',
