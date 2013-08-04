@@ -1,31 +1,15 @@
-/* 
+/*
  * Construct.js : Constructor
- * 
+ *
  * @author Makis Tracend
  * @cc_on Copyright © 2013 Makesites.org
  *
- * @license Dual-licensed under the MPL and AGPL: 
+ * @license Dual-licensed under the MPL and AGPL:
  * https://github.com/makesites/construct/blob/master/LICENSE
  */
 
-(function (root, factory) {
-	if (typeof exports === 'object') {
-		
-		var jquery_three = require('jquery.three');
-		var backbone_app = require('backbone.app');
-		
-		module.exports = factory(jquery_three, backbone_app);
-		
-	} else if (typeof define === 'function' && define.amd) {
-	
-		define(['jquery.three', 'backbone.app'], factory);
 
-	} else {
-		var jquery = $ || root.jQuery || root.ender;
-		// Browser globals
-		factory(jquery, root._, root.Backbone, root.APP);
-	}
-}(this, function ($, _, Backbone) {
+(function(){
 
 // Utils
 
@@ -34,7 +18,7 @@ var Promise = function(obj) {
 	var args = null;
 	var callbacks = [];
 	var resolved = false;
-	
+
 	this.add = function(callback) {
 		if (resolved) {
 			callback.apply(obj, args);
@@ -42,41 +26,56 @@ var Promise = function(obj) {
 			callbacks.push(callback);
 		}
 	};
-	
+
 	this.resolve = function() {
-		if (!resolved) {            
+		if (!resolved) {
 			args = arguments;
 			resolved = true;
-			
+
 			var callback = callbacks.shift();
 			while (callback) {
 				callback.apply(obj, arguments);
 				callback = callbacks.shift();
 			}
-			
+
 			callbacks = null;
 		}
 	};
 };
 
+// - Object extend
+Object.extend = function(destination, source) {
+	for (var property in source) {
+		if (source[property] && source[property].constructor && source[property].constructor === Object) {
+			destination[property] = destination[property] || {};
+			arguments.callee(destination[property], source[property]);
+		} else {
+			destination[property] = source[property];
+		}
+	}
+	return destination;
+};
+
 // main lib
 
 construct = function( options, callback ){
-	
+
 	// extend default config with supplied config
-	if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
-	
+	//if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
+	if( options.deps ) Object.extend(construct.config, options.deps);
+
 	if( callback ) construct.callback = callback;
-	
+
 	// execute any config options passed in the init()
 	construct.promise.resolve();
 	// set the initi method
 	//construct.config.init = construct.init;
-	
-	require.config( construct.config );
-	
-	require( construct.config.deps, construct.init);
-	
+
+	//require.config( construct.config );
+
+	//require( construct.config.deps, construct.init);
+	construct.init();
+
 };
 
 construct.loop = [];
@@ -84,42 +83,42 @@ construct.loop = [];
 construct.init = function(){
 	// execute when construct is initialized
 	//console.log("init");
-		
+
 	// initialize APP
 	var app = new APP();
 	window.app = app;
 	// start backbone history
 	Backbone.history.start();
-	
+
 	if( construct.callback ) construct.callback( app );
 	//return app;
-	
+
 };
-	
+
 // stack middleware to be used
 construct.register = function( fn ){
-	
+
 	//fn();
 	// add things in the loop (if necessary)
 	if(fn && fn.update){
 		construct.loop.push( fn.update );
 	}
-	
+
 };
 
 // initial setup
 construct.configure = function( fn ){
-	
-	// validate function? 
+
+	// validate function?
 	construct.promise.add( fn );
-	
+
 };
 
 // simple batch processor of all update events
 construct.update = function( fn ){
 	// stack middleware
-	
-	
+
+
 };
 
 construct.promise = new Promise();
@@ -192,99 +191,111 @@ construct.config = {
 				"construct"
 			]
 		}
-	}
+	},
+	"deps": []
 };
 
-//require(["backbone.app", "jquery.three"], function(){ 
 
-	APP.Models.User = APP.Model.extend({
-		defaults: {
-			admin : true
+// Add models after dependencies are laoded
+construct.promise.add(function(){
+	require(["backbone.app"], function(){
+	
+		APP.Models.User = APP.Model.extend({
+			defaults: {
+				admin : true
+			}
+		});
+	
+		APP.Models.Asset = APP.Model.extend({
+			defaults: {
+				x : 0,
+				y : 0,
+				editable : true
+			}
+		});
+	
+		APP.Collections.Users = APP.Collection.extend({
+		});
+	
+		APP.Collections.Assets = APP.Collection.extend({
+		});
+	
+	});
+});
+
+
+// Add models after dependencies are laoded
+construct.promise.add(function(){
+
+require(["backbone.app", "jquery.three"], function(){
+
+	// extend APP namespace
+	APP.Meshes = {};
+	APP.Sprites = {};
+	APP.Actors = {};
+
+
+	APP.Mesh = Backbone.View.extend({
+
+		preRender: function(){
+
+		},
+		render: function(){
+
+		},
+		postRender: function(){
+
+		},
+		update: function(){
+			// executed on every tick
+
 		}
+
 	});
-	
-	APP.Models.Asset = APP.Model.extend({
-		defaults: {
-			x : 0,
-			y : 0, 
-			editable : true
-		}
+
+	/* extending Mesh */
+	APP.Meshes.Static = APP.Mesh.extend({
 	});
-	
-	APP.Collections.Users = APP.Collection.extend({
+
+	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
+
 	});
-	
-	APP.Collections.Assets = APP.Collection.extend({
+
+
+	APP.Meshes.Avatar = APP.Meshes.Dynamic.extend({
 	});
-	
-//});
 
 
-// extend APP namespace 
-APP.Meshes = {};
-APP.Sprites = {};
-APP.Actors = {};
+	/* extending Avatar */
+	APP.Meshes.NPC = APP.Meshes.Avatar.extend({
+	});
 
 
+	APP.Meshes.Player = APP.Meshes.Avatar.extend({
+	});
 
-APP.Mesh = Backbone.View.extend({ 
 
-	preRender: function(){
-		
-	}, 
-	render: function(){
-		
-	}, 
-	postRender: function(){
-		
-	}, 
-	update: function(){
-		// executed on every tick 
-		
-	}
-	
+	APP.Sprite = Backbone.View.extend({
+	});
+
+
+	/* extending Sprite */
+	APP.Sprites.Static = APP.Sprite.extend({
+	});
+
+	APP.Sprites.Animated = APP.Sprite.extend({
+	});
+
+
+	APP.Views.Asset = APP.View.extend({
+
+		// user jquery-three for rendering
+		// attach dat.gui view if editable & user has admin rights
+	});
+
+
 });
 
-/* extending Mesh */
-APP.Meshes.Static = APP.Mesh.extend({
-});
-
-APP.Meshes.Dynamic = APP.Meshes.Static.extend({
-	
-});
-
-
-APP.Meshes.Avatar = APP.Meshes.Dynamic.extend({
-});
-
-
-/* extending Avatar */
-APP.Meshes.NPC = APP.Meshes.Avatar.extend({
-});
-
-
-APP.Meshes.Player = APP.Meshes.Avatar.extend({
-});
-
-
-APP.Sprite = Backbone.View.extend({
-});
-
-
-/* extending Sprite */
-APP.Sprites.Static = APP.Sprite.extend({
-});
-
-APP.Sprites.Animated = APP.Sprite.extend({
-});
-
-
-
-
-APP.Views.Asset = APP.View.extend({
-
-	// user jquery-three for rendering
-	// attach dat.gui view if editable & user has admin rights
 });
 
 //require(["backbone.app", "jquery.three"], function(){ 
@@ -301,4 +312,4 @@ APP.Views.Asset = APP.View.extend({
 //});
 
 
-}));
+})();
