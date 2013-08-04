@@ -14,9 +14,10 @@ var _cli = require('commander'),
 // - concatinate all files
 concat({
 	src : [
-		'lib/helpers.js',
+		'lib/utils.js',
 		'lib/construct.js',
 		'lib/api.js',
+		'lib/helpers.js',
 		'lib/config.js',
 		'lib/models.js',
 		'lib/views.js',
