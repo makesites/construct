@@ -125,6 +125,12 @@ construct.configure = function( fn ){
 
 };
 
+// extend language support
+construct.lang = function( language ){
+	// check language structure first...
+	Object.extend(locale, language);
+};
+
 /* Helper methods */
 /* consider prefixing with _  ? */
 
@@ -137,13 +143,6 @@ construct.update = function( fn ){
 
 
 };
-
-// extend language support
-construct.lang = function( language ){
-	// check language structure first...
-	Object.extend(locale, language);
-};
-
 
 construct.promise = new Promise();
 
