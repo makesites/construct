@@ -16,6 +16,7 @@ concat({
 	src : [
 		'lib/helpers.js',
 		'lib/construct.js',
+		'lib/api.js',
 		'lib/config.js',
 		'lib/models.js',
 		'lib/views.js',

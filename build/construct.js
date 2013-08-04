@@ -95,6 +95,16 @@ construct.init = function(){
 
 };
 
+// simple batch processor of all update events
+construct.update = function( fn ){
+	// stack middleware
+
+
+};
+
+construct.promise = new Promise();
+
+
 // stack middleware to be used
 construct.register = function( fn ){
 
@@ -113,15 +123,6 @@ construct.configure = function( fn ){
 	construct.promise.add( fn );
 
 };
-
-// simple batch processor of all update events
-construct.update = function( fn ){
-	// stack middleware
-
-
-};
-
-construct.promise = new Promise();
 
 
 // Dependencies
