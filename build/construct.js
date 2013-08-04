@@ -246,36 +246,50 @@ construct.config = {
 
 // Add models after dependencies are laoded
 construct.promise.add(function(){
-	require(["backbone.app"], function(){
-	
-		APP.Models.User = APP.Model.extend({
-			defaults: {
-				admin : true
-			}
-		});
-	
-		APP.Models.Asset = APP.Model.extend({
-			defaults: {
-				x : 0,
-				y : 0,
-				editable : true
-			}
-		});
-	
-		APP.Collections.Users = APP.Collection.extend({
-		});
-	
-		APP.Collections.Assets = APP.Collection.extend({
-		});
-	
+	//require(["backbone.app"], function(){
+
+	// reference in the APP namespace
+	if( typeof APP == "undefined" ) window.APP = {};
+	// fallbacks
+	var Model = APP.Model || Backbone.Model;
+	var Collection = APP.Collection || Backbone.Collection;
+
+	APP.Models.User = Model.extend({
+		defaults: {
+			admin : true
+		}
 	});
+
+	APP.Models.Asset = Model.extend({
+		defaults: {
+			x : 0,
+			y : 0,
+			editable : true
+		}
+	});
+
+	APP.Collections.Users = Collection.extend({
+	});
+
+	APP.Collections.Assets = Collection.extend({
+	});
+
+	//});
 });
 
 
 // Add models after dependencies are laoded
 construct.promise.add(function(){
 
-require(["backbone.app", "jquery.three"], function(){
+//require(["backbone.app", "jquery.three"], function(){
+
+	// reference in the APP namespace
+	if( typeof APP == "undefined" ) window.APP = {};
+	// fallbacks
+	var Model = APP.Model || Backbone.Model;
+	var Collection = APP.Collection || Backbone.Collection;
+	var View = APP.View || Backbone.View;
+	var Layout = APP.Layout || Backbone.Layout;
 
 	// extend APP namespace
 	APP.Meshes = {};
@@ -283,7 +297,7 @@ require(["backbone.app", "jquery.three"], function(){
 	APP.Actors = {};
 
 
-	APP.Mesh = Backbone.View.extend({
+	APP.Mesh = View.extend({
 
 		preRender: function(){
 
@@ -323,7 +337,7 @@ require(["backbone.app", "jquery.three"], function(){
 	});
 
 
-	APP.Sprite = Backbone.View.extend({
+	APP.Sprite = View.extend({
 	});
 
 
@@ -335,29 +349,35 @@ require(["backbone.app", "jquery.three"], function(){
 	});
 
 
-	APP.Views.Asset = APP.View.extend({
+	APP.Views.Asset = View.extend({
 
 		// user jquery-three for rendering
 		// attach dat.gui view if editable & user has admin rights
 	});
 
 
-});
+//});
 
 });
 
-//require(["backbone.app", "jquery.three"], function(){ 
-	
-	
-	/*
-	APP.Routers.User = APP.Router.extend({
+
+// Add models after dependencies are laoded
+construct.promise.add(function(){
+	//require(["backbone.app"], function(){
+
+	// reference in the APP namespace
+	if( typeof APP == "undefined" ) window.APP = {};
+	// fallbacks
+	var Router = APP.Router || Backbone.Router;
+
+	APP.Routers.User = Router.extend({
 		initialize: function(){
-		
+
 		}
 	});
-	*/
-	
-//});
+
+	//});
+});
 
 
 })();
