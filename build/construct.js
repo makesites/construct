@@ -78,8 +78,6 @@ construct = function( options, callback ){
 
 };
 
-construct.loop = [];
-
 construct.init = function(){
 	// execute when construct is initialized
 	//console.log("init");
@@ -94,15 +92,6 @@ construct.init = function(){
 	//return app;
 
 };
-
-// simple batch processor of all update events
-construct.update = function( fn ){
-	// stack middleware
-
-
-};
-
-construct.promise = new Promise();
 
 
 // stack middleware to be used
@@ -123,6 +112,21 @@ construct.configure = function( fn ){
 	construct.promise.add( fn );
 
 };
+
+/* Helper methods */
+/* consider prefixing with _  ? */
+
+
+construct.loop = [];
+
+// simple batch processor of all update events
+construct.update = function( fn ){
+	// stack middleware
+
+
+};
+
+construct.promise = new Promise();
 
 
 // Dependencies
