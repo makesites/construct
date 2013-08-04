@@ -60,11 +60,11 @@ Object.extend = function(destination, source) {
 
 var locale = {
 	"en-US": {
-		"errors": {
-			"No_Backbone": "Backbone is not available: http://backbonejs.org/",
-			"No_jQuery": "jQuery is not available: http://jquery.com/",
-			"No_jQueryThree": "jQuery Three is required: http://github.com/makesites/jquery-three",
-			"No_BackboneApp": "This function requires Backbone APP: http://github.com/makesites/backbone-app"
+		"error": {
+			"no-backbone": "Backbone is not available: http://backbonejs.org/",
+			"no-jquery": "jQuery is not available: http://jquery.com/",
+			"no-jquery-three": "jQuery Three is required: http://github.com/makesites/jquery-three",
+			"no-backbone-app": "This function requires Backbone APP: http://github.com/makesites/backbone-app"
 		}
 	}
 };
@@ -143,6 +143,26 @@ construct.update = function( fn ){
 
 
 };
+
+// output status messages
+// inspired by the l10n handlebars helper: https://gist.github.com/tracend/3261055
+construct.log = function( type, key ){
+	//prerequisites
+	if(!type || !key) return;
+	// find language
+	// make this a config option? (to avoid repeat lookups)
+	var lang = (navigator.language) ? navigator.language : navigator.userLanguage;
+
+	// pick the right dictionary - rever to the passed type/key
+	var string = locale[lang][type][key] || locale['en-US'][type][key] || type +": "+ key;
+
+	// check if console.log exists first?
+
+	//output
+	console.log(string);
+
+};
+
 
 construct.promise = new Promise();
 
