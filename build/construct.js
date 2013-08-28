@@ -73,31 +73,31 @@ var locale = {
 construct = function( options, callback ){
 
 	// prerequisites
-	if( typeof Backbone == "undefined" ) return construct.log("error", "no-backbone");
-	if( typeof jQuery == "undefined" ) return construct.log("error", "no-jquery");
-	if( typeof jQuery.fn.three == "undefined" ) return construct.log("error", "no-jquery-three");
+	//if( typeof Backbone == "undefined" ) return construct.log("error", "no-backbone");
+	//if( typeof jQuery == "undefined" ) return construct.log("error", "no-jquery");
+	//if( typeof jQuery.fn.three == "undefined" ) return construct.log("error", "no-jquery-three");
 
 	// extend default config with supplied config
 	//if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
-	//if( options.deps ) Object.extend(construct.config, options.deps);
+	if( options.deps ) Object.extend(construct.config, options.deps);
 
 	if( callback ) construct.callback = callback;
 
-	// execute any config options passed in the init()
-	construct.promise.resolve();
 	// set the init method
 	//construct.config.init = construct.init;
 
-	//require.config( construct.config );
-
-	//require( construct.config.deps, construct.init);
-	construct.init();
+	require.config( construct.config );
+	//console.log( construct.config );
+	require( construct.config.deps, construct.init);
+	//construct.init();
 
 };
 
 construct.init = function(){
 	// execute when construct is initialized
 	//console.log("init");
+	// execute any config options passed in the init()
+	construct.promise.resolve();
 
 	// initialize APP
 	var app = new APP();
@@ -173,13 +173,14 @@ construct.promise = new Promise();
 
 
 // Dependencies
+
 construct.config = {
 	"paths": {
 		"jquery": [
-			"//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min"
+			"//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min"
 		],
-		"json2": [
-			"//cdnjs.cloudflare.com/ajax/libs/json2/20121008/json2.min"
+		"json3": [
+			"//cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min"
 		],
 		"underscore": [
 			"//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min"
@@ -190,20 +191,20 @@ construct.config = {
 		"backbone": [
 			"//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min"
 		],
-		"three.js": [
+		"three-js": [
 			"//cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min"
 		],
 		"backbone.app": [
-			"//rawgithub.com/makesites/backbone-app/0.9.0/build/backbone.app-min"
+			"//rawgithub.com/makesites/backbone-app/0.9.2/build/backbone.app-min"
 		],
 		"jquery.three": [
-			"//rawgithub.com/makesites/jquery-three/master/build/jquery.three"
+			"//rawgithub.com/makesites/jquery-three/0.6.5/build/jquery.three-min"
 		]
 	},
 	"shim": {
 		"jquery": {
 			"deps": [
-				"json2"
+				"json3"
 			]
 		},
 		"underscore": {
@@ -226,21 +227,11 @@ construct.config = {
 		"jquery.three": {
 			"deps": [
 				"jquery",
-				"three.js"
-			]
-		},
-		"construct.input": {
-			"deps": [
-				"construct"
-			]
-		},
-		"construct.editor": {
-			"deps": [
-				"construct"
+				"three-js"
 			]
 		}
 	},
-	"deps": []
+	"deps": ["backbone.app", "jquery.three"]
 };
 
 
@@ -370,9 +361,20 @@ construct.promise.add(function(){
 	// fallbacks
 	var Router = APP.Router || Backbone.Router;
 
-	APP.Routers.User = Router.extend({
-		initialize: function(){
-
+	// default router - feel free to overwrite
+	APP.Routers.Default = APP.Routers.Default || Router.extend({
+		initialize: function( options ){
+			_.bindAll(this, "index");
+			this.data = new Backbone.Model();
+			console.log("init", "APP.Routers.Default");
+			return Router.prototype.initialize.call(this, options);
+		},
+		routes: {
+			"" : "index"
+		},
+		index: function(){
+			console.log( "Construct.js is running..." );
+			//this.layout = new APP.Layouts.Default({ data : this.data });
 		}
 	});
 
