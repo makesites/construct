@@ -295,6 +295,9 @@ construct.promise.add(function(){
 		},
 		initialize: function( options ){
 			//_.bindAll(this, "");
+			// main container(s)
+			this.objects = new Backbone.Model();
+
 			// create the 3D environment
 			this.$3d = $(this.el).three({}, _.bind(this._start, this) );
 
