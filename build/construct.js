@@ -195,10 +195,10 @@ construct.config = {
 			"//cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min"
 		],
 		"backbone.app": [
-			"//rawgithub.com/makesites/backbone-app/0.9.2/build/backbone.app-min"
+			"//rawgithub.com/makesites/backbone-app/master/build/backbone.app"
 		],
 		"jquery.three": [
-			"//rawgithub.com/makesites/jquery-three/0.6.5/build/jquery.three-min"
+			"//rawgithub.com/makesites/jquery-three/master/build/jquery.three"
 		]
 	},
 	"shim": {
@@ -290,7 +290,9 @@ construct.promise.add(function(){
 
 	APP.Views.Main3D = APP.View.extend({
 		el: ".main",
-
+		options: {
+			renderTarget: "shadow-root"
+		},
 		initialize: function( options ){
 			//_.bindAll(this, "");
 			// create the 3D environment
