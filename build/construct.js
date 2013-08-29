@@ -231,7 +231,7 @@ construct.config = {
 			]
 		}
 	},
-	"deps": ["backbone.app", "jquery.three"]
+	"deps": ["backbone.app", "jquery.three", "handlebars"]
 };
 
 
