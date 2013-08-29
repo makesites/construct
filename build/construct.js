@@ -337,7 +337,7 @@ construct.promise.add(function(){
 
 
 	APP.Mesh = View.extend({
-
+		/*
 		preRender: function(){
 
 		},
@@ -347,6 +347,7 @@ construct.promise.add(function(){
 		postRender: function(){
 
 		},
+		*/
 		update: function(){
 			// executed on every tick
 
