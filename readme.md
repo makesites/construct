@@ -16,19 +16,20 @@ It's architecture is module based, inspired by node.js and specifically express.
 
 ## Dependencies
 
-Construct acts more as a Dependency Injection framework, assisting the app and setting the ground work so all the needed classes are available for instantiation.
+Construct can act as a dependency injection framework, assisting the app and setting the ground work so all the necessary libs are available. Main dependencies are:
 
-* Backbone.js
-* Three.js
-* jQuery
+* [Backbone APP](http://github.com/makesites/backbone-app)
+* [jQuery Three](http://github.com/makesites/jquery-three)
+* [Handlebars.js](http://github.com/wycats/handlebars.js)
+
 
 ## Usage
 
-As a dependency injection framework, it is assumed that only one instance of the construct is required for any web page, and instantiation construct as a class is (currently) considered out of scope.
+As a dependency injection framework, it is assumed that only one instance of the construct is required for any web page, and instantiation construct as a class is (currently) considered out of scope. When ready, initialize construct as follows:
 ```
-construct.init();
+construct( options, callback );
+```
 
-```
 ## Plugins
 
 With its modular architecture the framework is extensible through plugins. Features like gamepad support, physics and touchscreen inputs can be included on demand by using one of the available extensions from http://github.com/constructjs
