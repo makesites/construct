@@ -21,6 +21,7 @@ Construct can act as a dependency injection framework, assisting the app and set
 * [Backbone APP](http://github.com/makesites/backbone-app)
 * [jQuery Three](http://github.com/makesites/jquery-three)
 * [Handlebars.js](http://github.com/wycats/handlebars.js)
+* [Require.js](https://github.com/jrburke/requirejs)
 
 
 ## Usage
