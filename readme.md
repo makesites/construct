@@ -30,6 +30,23 @@ As a dependency injection framework, it is assumed that only one instance of the
 construct( options, callback );
 ```
 
+## Options
+
+On initialization you may include the following options...
+
+* **deps** : an array of js libs to be used as dependencies
+
+
+## Methods
+
+Apart from initialization there are a number of methods exposed under the ```construct``` namespace to be used for different actions.
+
+* **config** : Returns the full object used in require.config
+* **configure** : Sets logic that will run in initialization
+* **register** : Connects objects with the update trigger
+* **lang** : Extends language support (used for localization)
+
+
 ## Plugins
 
 With its modular architecture the framework is extensible through plugins. Features like gamepad support, physics and touchscreen inputs can be included on demand by using one of the available extensions from http://github.com/constructjs
