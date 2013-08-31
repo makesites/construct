@@ -1,4 +1,4 @@
-## Construct.js
+# Construct.js
 
 Construct.js is a framework  focused around WebGL apps that uses popular open source libraries as dependencies. It's aim is to enhance rapid development, while being a lightweight wrapper that preserves all the set conventions of the dependency libraries.
 
@@ -7,10 +7,11 @@ It's architecture is module based, inspired by node.js and specifically express.
 
 ## Features
 
+* Web standards compliant
 * Modular architecture
 * Sinatra-like syntax
-* WebGL rendering
-* Gamepad / Touchscreen inputs
+* WebGL / Canvas rendering
+* Dependency loader
 
 
 ## Dependencies
@@ -28,7 +29,9 @@ As a dependency injection framework, it is assumed that only one instance of the
 construct.init();
 
 ```
+## Plugins
 
+With its modular architecture the framework is extensible through plugins. Features like gamepad support, physics and touchscreen inputs can be included on demand by using one of the available extensions from http://github.com/constructjs
 
 
 
