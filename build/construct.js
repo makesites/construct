@@ -78,8 +78,8 @@ construct = function( options, callback ){
 	//if( typeof jQuery.fn.three == "undefined" ) return construct.log("error", "no-jquery-three");
 
 	// extend default config with supplied config
-	//if( options.deps ) construct.config = $.extend( true, options.deps, construct.config);
-	if( options.deps ) Object.extend(construct.config, options.deps);
+	//if( options.require ) construct.config = $.extend( true, options.deps, construct.config);
+	if( options.require ) Object.extend(construct.config, options.require);
 
 	if( callback ) construct.callback = callback;
 

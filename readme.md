@@ -35,7 +35,7 @@ construct( options, callback );
 
 On initialization you may include the following options...
 
-* **deps** : an array of js libs to be used as dependencies
+* **require** : an array of js libs to be used as dependencies
 
 
 ## Methods
