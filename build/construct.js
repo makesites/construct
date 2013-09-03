@@ -353,13 +353,12 @@ construct.promise.add(function(){
 
 		_update: function( e ){
 			// automatic updates
-
+			// - broadcast updates to objects
+			for( var i in this.objects.attributes ){
+				this.objects.get(i).trigger("update");
+			}
 			// user-defined updates
 			this.update( e );
-		},
-
-		_updateObjects: function( e ){
-			console.log("_updateObjects", e);
 		},
 
 		_find: function( e ){
@@ -375,8 +374,19 @@ construct.promise.add(function(){
 
 
 	APP.Mesh = View.extend({
+		options: {
+			speed: false
+		},
+
 		state: {
 			rendered: false
+		},
+
+		initialize: function(){
+			// events
+			this.on("update", _.bind(this._update, this));
+
+			return View.prototype.initialize.apply(this, arguments);
 		},
 		/*
 		preRender: function(){
@@ -392,7 +402,23 @@ construct.promise.add(function(){
 			this.trigger("render");
 		},
 
-		update: function(){
+		_update: function( e ){
+			// set the speed of the object
+			if( this.options.speed && this.object ){
+				// variables
+				var speed = this.options.speed;
+				var position = this.object.position;
+				if(speed.x) position.x += speed.x;
+				if(speed.y) position.y += speed.y;
+				if(speed.z) position.z += speed.z;
+				// check if position has changed first
+				this.object.position.set( position.x, position.y, position.z );
+			}
+			// user-defined updates
+			this.update( e );
+		},
+
+		update: function( e ){
 			// executed on every tick
 
 		}
