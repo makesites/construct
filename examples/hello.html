@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+	<title>Construct.js: Hello world</title>
+
+</head>
+
+
+<div class="main"><!-- --></div>
+
+<!-- dependencies -->
+<!-- script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script -->
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
+<! -- main lib -->
+<script type="text/javascript" src="../build/construct.js"></script>
+
+<!-- init -->
+<script type="text/javascript">
+var app;
+var options = {};
+
+construct(options, function( response ){
+
+	app = response;
+
+});
+</script>
+
+<!-- blueprints -->
+<script type="text/javascript">
+
+construct.promise.add(function(){
+
+APP.Routers.Default = APP.Router.extend({
+	initialize: function( options ){
+		_.bindAll(this, "index");
+		this.data = new Backbone.Model();
+		console.log("init", "APP.Routers.Default");
+		return APP.Router.prototype.initialize.call(this, options);
+	},
+	routes: {
+		"" : "index"
+	},
+	index: function(){
+		console.log( "aaaaa" );
+		//this.layout = new APP.Layouts.Default({ data : this.data });
+	}
+});
+
+});
+
+</script>
+
+</html>

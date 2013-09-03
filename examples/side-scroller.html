@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+<head>
+	<title>Construct.js: Side-scroller</title>
+
+	<style>
+		*{ margin: 0; padding: 0; }
+
+		body, html{ margin: 0; padding: 0; width: 100%; height: 100%; }
+
+		.main {
+			width: 100%;
+			height: 100%;
+			background: #000;
+		}
+
+		camera {
+			-webkit-transform: translate3d( 0, 0, 100px);
+		}
+
+		.player {
+			-webkit-transform: translate3d( -60px, 0, 0) rotate3d(0, 0, 1, -90deg);
+			color: #00f;
+		}
+
+		.enemy {
+			-webkit-transform: translate3d( 90px, 0, 0) rotate3d(0, 0, 1, 90deg);
+			color: #f00;
+		}
+
+		.bullet {
+			color: #fff;
+		}
+
+		@-webkit-keyframes spin {
+			0% { -webkit-transform:rotate(0deg); }
+			100% { -webkit-transform:rotate(360deg); }
+		}
+
+	</style>
+</head>
+<body>
+
+
+<!-- game container -->
+<div class="main"><!-- --></div>
+
+<!-- templates -->
+<script id="game" type="text/x-handlebars-template">
+	<scene>
+		<camera class="perspective" data-fov="30" data-far="4000"></camera>
+		<player></player>
+		<enemies></enemies>
+		<rocks></rocks>
+	</scene>
+</script>
+
+
+<script id="player" type="text/x-handlebars-template">
+	<cylinder class="player" data-radius-top="0" data-radius-bottom="1"></cylinder>
+</script>
+
+<script id="rocks" type="text/x-handlebars-template">
+	{{#each .}}
+	<cube></cube>
+	{{/each}}
+</script>
+
+<script id="enemies" type="text/x-handlebars-template">
+	<cylinder class="enemy" data-radius-top="0" data-radius-bottom="1"></cylinder>
+</script>
+
+<script id="bullet" type="text/x-handlebars-template">
+	<sphere class="bullet"></sphere>
+</script>
+
+
+<!-- scripts -->
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
+
+<!-- main lib -->
+<script type="text/javascript" src="../build/construct.js"></script>
+<!-- extenstions -->
+<script type="text/javascript" src="//rawgithub.com/constructjs/input/master/build/construct.input.js"></script>
+
+
+<!-- init -->
+<script type="text/javascript">
+var app;
+var options = {
+	require: {
+		paths: {
+			"jquery.three": ["./jquery.three"]
+		}
+	}
+};
+
+construct(options, function( response ){
+
+	app = response;
+
+});
+</script>
+
+<!-- logic -->
+<script type="text/javascript">
+
+construct.input(["keys"]);
+// use construct.configure for custom logic or alternatively place it a separate file and include it in the 'deps' list...
+construct.configure(function(){
+
+	APP.Routers.Default = APP.Router.extend({
+		initialize: function( options ){
+			_.bindAll(this, "index");
+			this.data = new Backbone.Model();
+
+			return APP.Router.prototype.initialize.call(this, options);
+		},
+		routes: {
+			"" : "index"
+		},
+		index: function(){
+
+			this.game = new Game();
+		}
+	});
+
+	var Game = APP.Views.Main3D.extend({
+		options: {
+			html: $("#game").html()
+		},
+
+		start: function( $3d ){
+			//console.log("start", this.$3d);
+			// add objects
+			// register position of objects
+
+		},
+
+		update: function( e ){
+
+		},
+
+		postRender: function(){
+
+			this.objects.set({
+				player: new Player({
+					el: $(this.el).find("player")
+				}),
+				rocks: new Rocks({
+					el: $(this.el).find("rocks")
+				}),
+				enemies: new Enemies({
+					el: $(this.el).find("enemies")
+
+				})
+			});
+
+		}
+	});
+
+	var Player = APP.Meshes.Player.extend({
+		options: {
+			html: $("#player").html()
+		},
+		keys : {
+			'left right up down': 'onMove',
+			'space': 'onShoot'
+		},
+		update: function(){
+
+		},
+
+		onMove: function(event, key) {
+			event.preventDefault();
+			var position = this.object.position;
+			switch( key ) {
+				case "left":
+					position.x--;
+				break;
+				case "right":
+					position.x++;
+				break;
+				case "up":
+					position.y++;
+				break;
+				case "down":
+					position.y--;
+				break;
+
+			}
+			// check if the position has changed first
+			this.object.position.set(position.x, position.y, position.z);
+		},
+
+		onShoot: function(event, key ){
+			event.preventDefault();
+			console.log( $(this.el).find("scene") );
+			new Bullet({
+				el : this.el
+			});
+		}
+
+	});
+
+	var Rocks = APP.Meshes.Dynamic.extend({
+		options: {
+			html: $("#rocks").html(),
+			speed: { x: -0.01 },
+			append: true
+		}
+	});
+
+	var Enemies = APP.Meshes.NPC.extend({
+		options: {
+			html: $("#enemies").html(),
+			speed: { x: -0.1 },
+			append: true
+		},
+
+		update: function( e ){
+			// reset position
+			if( this.object.position.x < -70){
+				// randomize y
+				var y = Math.random()* 60 - 30;
+				this.object.position.set( 85, y , 0 );
+			}
+		}
+	});
+
+	var Bullet = APP.Meshes.Dynamic.extend({
+		options: {
+			html: $("#bullet").html(),
+			speed: { x: 1 },
+			append: true
+		},
+		collision: function( e ){
+			console.log( e.target );
+		}
+	});
+});
+
+</script>
+
+</body>
+</html>
