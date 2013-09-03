@@ -265,6 +265,30 @@ construct.promise.add(function(){
 	APP.Collections.Assets = Collection.extend({
 	});
 
+	APP.Collections.Objects = Backbone.Model.extend({
+
+		set: function( objects ){
+			// set event listeners
+			for( var i in objects ){
+				this._setupObject( objects[i] );
+			}
+			return Backbone.Model.prototype.set.apply(this, arguments);
+		},
+
+		_setupObject: function( object ){
+			var self = this;
+
+			if( object.state.rendered ){
+				this.trigger("find", object);
+			} else {
+				object.on("render", function(){
+					self.trigger("find", object);
+				});
+			}
+		}
+
+	});
+
 	//});
 });
 
@@ -296,13 +320,15 @@ construct.promise.add(function(){
 		initialize: function( options ){
 			//_.bindAll(this, "");
 			// main container(s)
-			this.objects = new Backbone.Model();
+			this.objects = new APP.Collections.Objects();
 
 			// create the 3D environment (watch for live updates)
 			this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
 
-			// add event listener
+			// events
 			$("body").on("update", this.el, _.bind(this._update, this) );
+			this.objects.on("find", _.bind(this._find, this) );
+
 			return APP.View.prototype.initialize.call( this, options );
 		},
 
@@ -330,23 +356,42 @@ construct.promise.add(function(){
 
 			// user-defined updates
 			this.update( e );
+		},
+
+		_updateObjects: function( e ){
+			console.log("_updateObjects", e);
+		},
+
+		_find: function( e ){
+			var id = $(e.el).find("[data-id]").attr("data-id");
+			if( !_.isUndefined(id) ){
+				var object = this.$3d.get(id);
+				// save a reference to that object
+				e.object = object;
+			}
 		}
 
 	});
 
 
 	APP.Mesh = View.extend({
+		state: {
+			rendered: false
+		},
 		/*
 		preRender: function(){
 
 		},
 		render: function(){
 
-		},
+		}
+		,*/
 		postRender: function(){
-
+			// set state
+			this.state.rendered = true;
+			this.trigger("render");
 		},
-		*/
+
 		update: function(){
 			// executed on every tick
 
@@ -356,6 +401,7 @@ construct.promise.add(function(){
 
 	/* extending Mesh */
 	APP.Meshes.Static = APP.Mesh.extend({
+
 	});
 
 	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
