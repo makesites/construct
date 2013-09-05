@@ -386,7 +386,9 @@ construct.promise.add(function(){
 		},
 
 		_find: function( e ){
-			var id = $(e.el).find("[data-id]").attr("data-id");
+			// where is the data id located in relation to this.el
+			var id = (  $(e.el).find("[data-id]").length > 0 ) ? $(e.el).find("[data-id]").attr("data-id") : $(e.el).attr("data-id");
+
 			if( !_.isUndefined(id) ){
 				var object = this.$3d.get(id);
 				// save a reference to that object
@@ -432,6 +434,7 @@ construct.promise.add(function(){
 			// FIX: if there's no reference to the object yet, request it again
 			// (and stop further processing)
 			if( _.isUndefined(this.object) ){
+				//console.log("render", this);
 				return this.trigger("render");
 			}
 			// set the speed of the object
@@ -526,7 +529,8 @@ construct.promise.add(function(){
 			for(var i = 0; i < models.length ; i++){
 				var model = models.get(i) || {};
 				var object = new this.model({
-					el: this.el,
+					parentEl: this.el,
+					renderTarget: this.el,
 					model: model,
 					append: true
 				});
