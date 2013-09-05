@@ -659,6 +659,9 @@ construct.promise.add(function(){
 		},
 		index: function(){
 			console.log( "Construct.js is running..." );
+			if( !_.isUndefined( APP.Main ) ){
+				this.main = new APP.Main({ data : this.data });
+			}
 			//this.layout = new APP.Layouts.Default({ data : this.data });
 		}
 	});
