@@ -259,6 +259,15 @@ construct.promise.add(function(){
 		}
 	});
 
+	APP.Models.Mesh = Model.extend({
+		defaults: {
+			position : [0,0,0],
+			rotation : [0,0,0],
+			scale : [1,1,1]
+		}
+	});
+
+
 	APP.Collections.Users = Collection.extend({
 	});
 
@@ -407,15 +416,24 @@ construct.promise.add(function(){
 		state: {
 			rendered: false
 		},
-
-		attributes: {},
-
-		initialize: function(){
+/*
+		attributes: function(){
+			return this.data.toJSON();
+		},
+*/
+		initialize: function( options ){
+			// data
+			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
 			// events
 			this.on("update", _.bind(this._update, this));
 
 			return View.prototype.initialize.apply(this, arguments);
 		},
+
+		start: _.once(function(){
+			console.log(this.data.get(position) );
+			//this.object.position.set( position.x, position.y, position.z );
+		}),
 		/*
 		preRender: function(){
 
@@ -431,12 +449,16 @@ construct.promise.add(function(){
 		},
 
 		_update: function( e ){
+			var self = this;
 			// FIX: if there's no reference to the object yet, request it again
 			// (and stop further processing)
 			if( _.isUndefined(this.object) ){
 				//console.log("render", this);
 				return this.trigger("render");
 			}
+			// set the initial attributes (once)
+			//this.start();
+
 			// set the speed of the object
 			if( this.options.speed && this.object ){
 				// variables
@@ -531,7 +553,7 @@ construct.promise.add(function(){
 				var object = new this.model({
 					parentEl: this.el,
 					renderTarget: this.el,
-					model: model,
+					//model: model,
 					append: true
 				});
 				this._setupObject( object );
