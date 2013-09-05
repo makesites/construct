@@ -402,6 +402,8 @@ construct.promise.add(function(){
 				var object = this.$3d.get(id);
 				// save a reference to that object
 				e.object = object;
+				// trigger start event
+				e.trigger("start");
 			}
 		}
 
@@ -410,7 +412,8 @@ construct.promise.add(function(){
 
 	APP.Mesh = View.extend({
 		options: {
-			speed: false
+			speed: false,
+			bind: "sync"
 		},
 
 		state: {
@@ -422,18 +425,34 @@ construct.promise.add(function(){
 		},
 */
 		initialize: function( options ){
+			options = options || {};
+			// FIX: reject collections
+			if (options.models ) return;
 			// data
 			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
 			// events
 			this.on("update", _.bind(this._update, this));
+			this.on("start", _.bind(this._start, this));
 
 			return View.prototype.initialize.apply(this, arguments);
 		},
 
-		start: _.once(function(){
-			console.log(this.data.get(position) );
-			//this.object.position.set( position.x, position.y, position.z );
-		}),
+		start: function(){
+
+		},
+
+		// set the initial attributes (once)
+		_start: function(){
+
+			//console.log( _.isEmpty(this.data.get("position")) );
+			var position = this.data.get("position");
+			var defaults = APP.Models.Mesh.prototype.defaults.position;
+			if( position !== defaults ){
+				this.object.position.set( position[0], position[1], position[2] );
+			}
+			// user defined actions
+			this.start();
+		},
 		/*
 		preRender: function(){
 
@@ -458,8 +477,6 @@ construct.promise.add(function(){
 				//console.log("render", this);
 				return this.trigger("render");
 			}
-			// set the initial attributes (once)
-			//this.start();
 
 			// set the speed of the object
 			if( this.options.speed && this.object ){
@@ -569,7 +586,7 @@ construct.promise.add(function(){
 
 			//this.object = options.object || this.options.object || this.object || APP.Mesh;
 
-			//return APP.Collection.prototype.initialize.call(this, models, options);
+			return APP.Collection.prototype.initialize.call(this, null, options);
 		},
 
 		update: function( e ){
