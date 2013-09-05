@@ -442,10 +442,12 @@ construct.promise.add(function(){
 
 		}
 		,*/
-		postRender: function(){
+		_postRender: function(){
 			// set state
 			this.state.rendered = true;
 			this.trigger("render");
+
+			return View.prototype._postRender.call(this);
 		},
 
 		_update: function( e ){
