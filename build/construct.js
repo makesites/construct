@@ -680,6 +680,7 @@ construct.promise.add(function(){
 			// events
 			this.on("update", _.bind(this._update, this) );
 			this.objects.on("find", _.bind(this._find, this) );
+			this.objects.on("change", _.bind(this._refresh, this) );
 
 			//this.object = options.object || this.options.object || this.object || APP.Mesh;
 
@@ -687,6 +688,10 @@ construct.promise.add(function(){
 		},
 
 		update: function( e ){
+
+		},
+
+		refresh: function( e ){
 
 		},
 
@@ -699,6 +704,11 @@ construct.promise.add(function(){
 			}
 			// user-defined updates
 			this.update( e );
+		},
+		// when the objects collection has changed:
+		_refresh: function( e ){
+			// user defined
+			this.refresh( e );
 		},
 
 		_find: function( e ){
