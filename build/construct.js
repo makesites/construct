@@ -56,6 +56,14 @@ Object.extend = function(destination, source) {
 	return destination;
 };
 
+var utils = {
+	uuid: function(){
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+			return v.toString(16);
+		});
+	}
+};
 /* Language file */
 
 var locale = {
@@ -288,6 +296,15 @@ construct.promise.add(function(){
 				}
 			}
 			return Backbone.Model.prototype.set.apply(this, arguments);
+		},
+
+		// this is like 'set', with an automatic assignment of a key
+		add: function( object ){
+			var objects = {};
+			// loop for array?
+			var id = utils.uuid();
+			objects[id] = object;
+			this.set( objects );
 		},
 
 		_setupObject: function( object ){
