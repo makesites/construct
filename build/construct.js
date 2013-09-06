@@ -276,10 +276,16 @@ construct.promise.add(function(){
 
 	APP.Collections.Objects = Backbone.Model.extend({
 
-		set: function( objects ){
-			// set event listeners
-			for( var i in objects ){
-				this._setupObject( objects[i] );
+		set: function( objects, val, options ){
+			options = options || {};
+			if( options.unset ){
+				// removing object, do nothing
+			} else {
+				// set event listeners
+				for( var i in objects ){
+					objects[i]._name = i;
+					this._setupObject( objects[i] );
+				}
 			}
 			return Backbone.Model.prototype.set.apply(this, arguments);
 		},
@@ -289,15 +295,24 @@ construct.promise.add(function(){
 
 			if( object.state.rendered ){
 				this.trigger("find", object);
+				this.trigger("parent", object);
 			}
 			// for all future requests
+			object.on("parent", function(){
+				self.trigger("parent", object);
+			});
 			object.on("render", function(){
 				self.trigger("find", object);
 			});
 			object.on("find", function( e ){
 				self.trigger("find", e);
 			});
+			object.on("remove", _.bind(this._removed, this));
 
+		},
+
+		_removed: function( e ){
+			this.unset( e._name );
 		}
 
 	});
@@ -434,11 +449,17 @@ construct.promise.add(function(){
 			if (options.models ) return;
 			// data
 			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
+			// find the parent
+			this.trigger("parent");
 			// events
 			this.on("update", _.bind(this._update, this));
 			this.on("start", _.bind(this._start, this));
 
-			return View.prototype.initialize.apply(this, arguments);
+			var self = this;
+			// HACK!!! wait till the parent arrives...
+			setTimeout(function(){
+				return View.prototype.initialize.call(self, options);
+			}, 100);
 		},
 
 		start: function(){
@@ -520,6 +541,23 @@ construct.promise.add(function(){
 
 		},
 
+		remove: function(){
+			//console.log("remove", View.prototype.remove );
+			this.trigger("remove", this);
+			// remove object from scene
+			// (should this be automated by removing the tags?)
+			var scene = this.object.parent;
+			if (scene) scene.remove( this.object );
+			// also remove from $3d.objects list (not implemented yet)
+
+			// unbind events
+			this.undelegateEvents();
+			this.$el.removeData().unbind();
+
+			//Remove view from DOM
+			return View.prototype.remove.call(this);
+		},
+
 		// Internal
 		// - validate is required in backbone models
 		_validate: function(){
@@ -540,13 +578,19 @@ construct.promise.add(function(){
 			this.objects = new APP.Collections.Objects();
 			// events
 			this.objects.on("find", _.bind(this._find, this) );
+			this.objects.on("parent", _.bind(this._self, this) );
 
 			return APP.Meshes.Static.prototype.initialize.call( this, options );
 		},
 
 		_find: function( e ){
 			this.trigger("find", e);
+		},
+
+		_self: function( e ){
+			e.parent = (this.object) ? this.object : null;
 		}
+
 	});
 
 
