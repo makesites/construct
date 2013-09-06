@@ -655,8 +655,11 @@ construct.promise.add(function(){
 			//
 			// base objects
 			this.el = this.el || options.el || null;
-			this.objects = [];
+			this.objects = new APP.Collections.Objects();
 			//var models = models || [];
+
+			// events
+
 
 			//if( options.collection ){
 			//	models = options.collection;
@@ -669,14 +672,14 @@ construct.promise.add(function(){
 					//model: model,
 					append: true
 				});
-				this._setupObject( object );
-				this.objects.push( object );
+				this.objects.add( object );
 				// add event listeners
 			}
 			//}
 
-			// Event listeners
+			// events
 			this.on("update", _.bind(this._update, this) );
+			this.objects.on("find", _.bind(this._find, this) );
 
 			//this.object = options.object || this.options.object || this.object || APP.Mesh;
 
@@ -691,25 +694,15 @@ construct.promise.add(function(){
 		_update: function( e ){
 			// automatic updates
 			// - broadcast updates to objects
-			for( var i in this.objects ){
-				this.objects[i].trigger("update");
+			for( var i in this.objects.attributes ){
+				this.objects.get(i).trigger("update");
 			}
 			// user-defined updates
 			this.update( e );
 		},
 
-		_setupObject: function( object ){
-			var self = this;
-
-			if( object.state.rendered ){
-
-				this.trigger("find", object);
-			}
-			// for future events
-			object.on("render", function(){
-				self.trigger("find", object);
-			});
-
+		_find: function( e ){
+			this.trigger("find", e);
 		}
 
 	});
