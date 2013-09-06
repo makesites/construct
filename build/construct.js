@@ -289,11 +289,15 @@ construct.promise.add(function(){
 
 			if( object.state.rendered ){
 				this.trigger("find", object);
-			} else {
-				object.on("render", function(){
-					self.trigger("find", object);
-				});
 			}
+			// for all future requests
+			object.on("render", function(){
+				self.trigger("find", object);
+			});
+			object.on("find", function( e ){
+				self.trigger("find", e);
+			});
+
 		}
 
 	});
@@ -501,7 +505,12 @@ construct.promise.add(function(){
 				// check if position has changed first
 				this.object.position.set( position.x, position.y, position.z );
 			}
-
+			if( this.objects ){
+				// - broadcast updates to objects
+				for( var i in this.objects.attributes ){
+					this.objects.get(i).trigger("update");
+				}
+			}
 			// user-defined updates
 			this.update( e );
 		},
@@ -525,7 +534,19 @@ construct.promise.add(function(){
 	});
 
 	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
+		initialize: function( options ){
 
+			// containers
+			this.objects = new APP.Collections.Objects();
+			// events
+			this.objects.on("find", _.bind(this._find, this) );
+
+			return APP.Meshes.Static.prototype.initialize.call( this, options );
+		},
+
+		_find: function( e ){
+			this.trigger("find", e);
+		}
 	});
 
 
