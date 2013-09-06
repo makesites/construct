@@ -19,13 +19,17 @@
 		}
 
 		.player {
-			-webkit-transform: translate3d( -60px, 0, 0) rotate3d(0, 0, 1, -90deg);
+			-webkit-transform: translate3d( -40px, 0, 0) rotate3d(0, 0, 1, -90deg);
 			color: #00f;
 		}
 
 		.enemy {
 			-webkit-transform: translate3d( 90px, 0, 0) rotate3d(0, 0, 1, 90deg);
 			color: #f00;
+		}
+
+		.rock {
+			color: #999;
 		}
 
 		.bullet {
@@ -61,9 +65,7 @@
 </script>
 
 <script id="rocks" type="text/x-handlebars-template">
-	{{#each .}}
-	<cube></cube>
-	{{/each}}
+	<cube class="rock"></cube>
 </script>
 
 <script id="enemies" type="text/x-handlebars-template">
@@ -71,13 +73,12 @@
 </script>
 
 <script id="bullet" type="text/x-handlebars-template">
-	<sphere class="bullet"></sphere>
+	<sphere class="bullet" data-radius="0.2"></sphere>
 </script>
 
 
 <!-- scripts -->
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
-
 <!-- main lib -->
 <script type="text/javascript" src="../build/construct.js"></script>
 <!-- extenstions -->
@@ -88,16 +89,16 @@
 <script type="text/javascript">
 var app;
 var options = {
-	require: {
+	libs: {
 		paths: {
 			"jquery.three": ["./jquery.three"]
 		}
 	}
 };
 
-construct(options, function( response ){
+construct(options, function( backbone ){
 
-	app = response;
+	app = backbone;
 
 });
 </script>
@@ -109,23 +110,7 @@ construct.input(["keys"]);
 // use construct.configure for custom logic or alternatively place it a separate file and include it in the 'deps' list...
 construct.configure(function(){
 
-	APP.Routers.Default = APP.Router.extend({
-		initialize: function( options ){
-			_.bindAll(this, "index");
-			this.data = new Backbone.Model();
-
-			return APP.Router.prototype.initialize.call(this, options);
-		},
-		routes: {
-			"" : "index"
-		},
-		index: function(){
-
-			this.game = new Game();
-		}
-	});
-
-	var Game = APP.Views.Main3D.extend({
+	APP.Main = APP.Views.Main3D.extend({
 		options: {
 			html: $("#game").html()
 		},
@@ -146,13 +131,15 @@ construct.configure(function(){
 			this.objects.set({
 				player: new Player({
 					el: $(this.el).find("player")
-				}),
-				rocks: new Rocks({
+				})
+			});
+
+			this.layers.set({
+				rocks: new Rocks( new APP.Collection( new Array(20) ), {
 					el: $(this.el).find("rocks")
 				}),
-				enemies: new Enemies({
+				enemies: new Enemies( new APP.Collection( new Array(10) ), {
 					el: $(this.el).find("enemies")
-
 				})
 			});
 
@@ -166,9 +153,6 @@ construct.configure(function(){
 		keys : {
 			'left right up down': 'onMove',
 			'space': 'onShoot'
-		},
-		update: function(){
-
 		},
 
 		onMove: function(event, key) {
@@ -195,35 +179,69 @@ construct.configure(function(){
 
 		onShoot: function(event, key ){
 			event.preventDefault();
-			console.log( $(this.el).find("scene") );
-			new Bullet({
-				el : this.el
-			});
+			this.objects.add(
+				new Bullet({
+					parentEl : this.el,
+					renderTarget : this.el
+				})
+			);
+
 		}
 
 	});
 
-	var Rocks = APP.Meshes.Dynamic.extend({
+	// Objects
+
+	var Rock = APP.Meshes.Dynamic.extend({
 		options: {
 			html: $("#rocks").html(),
-			speed: { x: -0.01 },
-			append: true
-		}
-	});
+			speed: { x: -0.01 }
+		},
 
-	var Enemies = APP.Meshes.NPC.extend({
-		options: {
-			html: $("#enemies").html(),
-			speed: { x: -0.1 },
-			append: true
+		preRender: function(){
+			// set a random position
+			// set a random position
+			var x = Math.random()* 160;
+			var y = 30 - Math.random()* 60;
+			var s = 1 + Math.random()*3;
+			var r = Math.random()*360;
+			this.data.set({
+				position: [x,y,0],
+				scale: [s,s,s],
+				rotation: [r,r,r]
+			});
 		},
 
 		update: function( e ){
-			// reset position
-			if( this.object.position.x < -70){
-				// randomize y
-				var y = Math.random()* 60 - 30;
-				this.object.position.set( 85, y , 0 );
+			// remove when the object is no longer visible
+			if( this.object.position.x < -100){
+				//
+				this.remove();
+			}
+		}
+
+	});
+
+	var Enemy = APP.Meshes.NPC.extend({
+		options: {
+			html: $("#enemies").html(),
+			speed: { x: -0.1 }
+		},
+
+		preRender: function(){
+			// set a random position
+			var x = 80 + Math.random()* 200;
+			var y = 30 - Math.random()* 60;
+			this.data.set({
+				position: [x,y,0]
+			});
+		},
+
+		update: function( e ){
+			// remove when the object is no longer visible
+			if( this.object.position.x < -100){
+				//
+				this.remove();
 			}
 		}
 	});
@@ -231,13 +249,54 @@ construct.configure(function(){
 	var Bullet = APP.Meshes.Dynamic.extend({
 		options: {
 			html: $("#bullet").html(),
-			speed: { x: 1 },
+			speed: { x: 2 },
 			append: true
 		},
+		preRender: function(){
+			// match to location of the player
+			var p = this.parent.position;
+			this.data.set({
+				position: [ p.x, p.y, p.z ]
+			});
+		},
+
+		update: function( e ){
+			// reset position
+			if( this.object.position.x > 120){
+				//
+				this.remove();
+			}
+		},
+
 		collision: function( e ){
 			console.log( e.target );
 		}
 	});
+
+
+	// Layers
+
+	var Rocks = APP.Layer.extend({
+		model: Rock,
+		refresh: function(){
+			// preserve population
+			if( this.objects.length < 20){
+				this.add();
+			}
+		}
+
+	});
+
+	var Enemies = APP.Layer.extend({
+		model: Enemy,
+		refresh: function(){
+			// preserve population
+			if( this.objects.length < 10){
+				this.add();
+			}
+		}
+	});
+
 });
 
 </script>
