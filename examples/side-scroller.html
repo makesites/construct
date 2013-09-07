@@ -82,19 +82,13 @@
 <!-- main lib -->
 <script type="text/javascript" src="../build/construct.js"></script>
 <!-- extenstions -->
-<script type="text/javascript" src="//rawgithub.com/constructjs/input/master/build/construct.input.js"></script>
+<script type="text/javascript" src="//rawgithub.com/constructjs/input/0.2.0/build/construct.input.js"></script>
 
 
 <!-- init -->
 <script type="text/javascript">
 var app;
-var options = {
-	libs: {
-		paths: {
-			"jquery.three": ["./jquery.three"]
-		}
-	}
-};
+var options = {};
 
 construct(options, function( backbone ){
 
@@ -200,10 +194,10 @@ construct.configure(function(){
 
 		preRender: function(){
 			// set a random position
-			// set a random position
 			var x = Math.random()* 160;
 			var y = 30 - Math.random()* 60;
 			var s = 1 + Math.random()*3;
+			// set a random size/rotation
 			var r = Math.random()*360;
 			this.data.set({
 				position: [x,y,0],
