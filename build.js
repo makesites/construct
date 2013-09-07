@@ -10,6 +10,15 @@ var _cli = require('commander'),
 	_fs = require('fs');
 
 
+// will generate a CSV if package.json contains multiple licenses
+_handlebars.registerHelper('license', function(items){
+	items = items.map(function(val){
+		return val.type;
+	});
+	return items.join(', ');
+});
+
+
 // Logic
 // - concatinate all files
 concat({
@@ -108,12 +117,3 @@ function lint(path, callback) {
 		callback();
 	}
 }
-
-
-// will generate a CSV if package.json contains multiple licenses
-_handlebars.registerHelper('license', function(items){
-	items = items.map(function(val){
-		return val.type;
-	});
-	return items.join(', ');
-});

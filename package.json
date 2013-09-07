@@ -1,6 +1,9 @@
 {
 	"name" : "construct",
 	"version" : "0.2.0",
+	"author" : "makesites",
+	"homepage" : "https://github.com/makesites/construct",
+	"description" : "Construct.js : Constructor",
 	"devDependencies" : {
 		"commander" : "~0.5",
 		"jshint" : "~0.9",
@@ -14,6 +17,11 @@
 		{
 		"type": "Mozilla Public License v2.0",
 		"url": "http://www.mozilla.org/MPL/2.0/"
+		},
+		{
+		"type": "GNU Affero General Public License v3.0",
+		"url": "https://www.gnu.org/licenses/agpl-3.0.html"
 		}
+
 	]
 }

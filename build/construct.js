@@ -1,13 +1,16 @@
-/*
+/**
+ * @name construct
  * Construct.js : Constructor
  *
- * @author Makis Tracend
- * @cc_on Copyright © 2013 Makesites.org
+ * Version: 0.2.0 (Sat, 07 Sep 2013 06:27:10 GMT)
+ * Homepage: https://github.com/makesites/construct
  *
- * @license Dual-licensed under the MPL and AGPL:
- * https://github.com/makesites/construct/blob/master/LICENSE
+ * @author makesites
+ * Created by: Makis Tracend (@tracend)
+ *
+ * @cc_on Copyright © 2013 Makesites.org
+ * @license Dual-licensed: Mozilla Public License v2.0, GNU Affero General Public License v3.0
  */
-
 
 (function(){
 
@@ -203,10 +206,10 @@ construct.config = {
 			"//cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min"
 		],
 		"backbone.app": [
-			"//rawgithub.com/makesites/backbone-app/master/build/backbone.app"
+			"//rawgithub.com/makesites/backbone-app/0.9.3/build/backbone.app-min"
 		],
 		"jquery.three": [
-			"//rawgithub.com/makesites/jquery-three/master/build/jquery.three"
+			"//rawgithub.com/makesites/jquery-three/0.7.0/build/jquery.three-min"
 		]
 	},
 	"shim": {
