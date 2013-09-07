@@ -1,6 +1,6 @@
 {
 	"name" : "construct",
-	"version" : "0.2.0",
+	"version" : "0.3.0",
 	"author" : "makesites",
 	"homepage" : "https://github.com/makesites/construct",
 	"description" : "Construct.js : Constructor",

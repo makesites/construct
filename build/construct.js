@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.2.0 (Sat, 07 Sep 2013 06:27:10 GMT)
+ * Version: 0.3.0 (Sat, 07 Sep 2013 07:13:59 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
