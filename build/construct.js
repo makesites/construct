@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sat, 07 Sep 2013 07:13:59 GMT)
+ * Version: 0.3.0 (Thu, 26 Sep 2013 03:28:02 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -83,24 +83,26 @@ var locale = {
 
 construct = function( options, callback ){
 
-	// prerequisites
-	//if( typeof Backbone == "undefined" ) return construct.log("error", "no-backbone");
-	//if( typeof jQuery == "undefined" ) return construct.log("error", "no-jquery");
-	//if( typeof jQuery.fn.three == "undefined" ) return construct.log("error", "no-jquery-three");
-
 	// extend default config with supplied config
 	//if( options.require ) construct.config = $.extend( true, options.deps, construct.config);
 	if( options.libs ) Object.extend(construct.config, options.libs);
 
 	if( callback ) construct.callback = callback;
 
-	// set the init method
-	//construct.config.init = construct.init;
-
-	require.config( construct.config );
-	//console.log( construct.config );
-	require( construct.config.deps, construct.init);
-	//construct.init();
+	if(typeof require != "undefined"){
+		require.config( construct.config );
+		require( construct.config.deps, construct.init);
+		// set the init method
+		//construct.config.init = construct.init;
+	} else {
+		// #9 proceeed if Require.js is not available...
+		// prerequisites
+		if( typeof Backbone == "undefined" ) return construct.log("error", "no-backbone");
+		if( typeof jQuery == "undefined" ) return construct.log("error", "no-jquery");
+		if( typeof jQuery.fn.three == "undefined" ) return construct.log("error", "no-jquery-three");
+		// initiate
+		construct.init();
+	}
 
 };
 
