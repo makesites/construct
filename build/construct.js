@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Mon, 30 Sep 2013 02:15:42 GMT)
+ * Version: 0.3.0 (Fri, 04 Oct 2013 05:06:17 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -404,7 +404,8 @@ construct.promise.add(function(){
 				this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
 
 			// events
-			$("body").on("update", this.el, _.bind(this._update, this) );
+			//$("body").on("update", this.el, _.bind(this._update, this) );
+			$(this.el).on("update", _.bind(this._update, this) );
 			this.objects.on("find", _.bind(this._find, this) );
 			this.layers.on("find", _.bind(this._find, this) );
 
