@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Fri, 04 Oct 2013 05:57:57 GMT)
+ * Version: 0.3.0 (Sat, 05 Oct 2013 11:08:57 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -640,6 +640,28 @@ construct.promise.add(function(){
 
 
 	APP.Sprite = View.extend({
+		initialize: function( options ){
+			options = options || {};
+			// FIX: reject collections
+			if (options.models ) return;
+			// data
+			this.data = this.data || options.data || this.model || new APP.Model();
+			this.object = options.object;
+
+			// events
+			this.on("update", _.bind(this._update, this));
+			//this.on("start", _.bind(this._start, this));
+			if( this._start ) this._start();
+			//return View.prototype.initialize.call(self, options);
+		},
+
+		_start: function(){
+
+		},
+
+		_update: function(){
+
+		}
 	});
 
 
@@ -647,7 +669,57 @@ construct.promise.add(function(){
 	APP.Sprites.Static = APP.Sprite.extend({
 	});
 
+	// based on : http://stemkoski.github.io/Three.js/Texture-Animation.html
 	APP.Sprites.Animated = APP.Sprite.extend({
+		options: {
+			timeElapsed: 0
+		},
+
+		_start: function(){
+			var texture = this.object.children[0].material.map;
+			// put all these variables in this.options or this.state...
+			var tiles = this.model.get("tiles");
+			this.tilesHorizontal = tiles[0];
+			this.tilesVertical = tiles[1];
+			// how many images does this spritesheet contain?
+			//  usually equals tilesHoriz * tilesVert, but not necessarily,
+			//  if there at blank tiles at the bottom of the spritesheet.
+			this.numberOfTiles = this.model.get("total");
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set( 1 / this.tilesHorizontal, 1 / this.tilesVertical );
+
+			// how long should each image be displayed?
+			this.tileDisplayDuration = this.model.get("timeout");
+
+			// how long has the current image been displayed?
+			this.currentDisplayTime = 0;
+
+			// which image is currently being displayed?
+			this.currentTile = 0;
+			this.options.lastTime = (new Date()).getTime();
+			return APP.Sprite.prototype._start.call(this);
+		},
+
+		_update: function( e ){
+			var now = (new Date()).getTime(),
+				timeElapsed = now - this.options.lastTime;
+			//this.currentDisplayTime += timeElapsed;
+			var texture = this.object.children[0].material.map;
+
+			if (timeElapsed > this.tileDisplayDuration)
+			{
+				//this.currentDisplayTime -= this.tileDisplayDuration;
+				this.options.lastTime = now;
+				this.currentTile++;
+				if (this.currentTile == this.numberOfTiles)
+					this.currentTile = 0;
+				var currentColumn = this.currentTile % this.tilesHorizontal;
+				texture.offset.x = currentColumn / this.tilesHorizontal;
+				var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+				texture.offset.y = 1 - currentRow / this.tilesVertical;
+			}
+			return APP.Sprite.prototype._update.call(this, e);
+		}
 	});
 
 
