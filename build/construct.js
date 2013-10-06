@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sat, 05 Oct 2013 11:08:57 GMT)
+ * Version: 0.3.0 (Sun, 06 Oct 2013 03:27:49 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -82,7 +82,8 @@ var locale = {
 // main lib
 
 construct = function( options, callback ){
-
+	// fallback
+	options = options || {};
 	// extend default config with supplied config
 	//if( options.require ) construct.config = $.extend( true, options.deps, construct.config);
 	if( options.libs ) Object.extend(construct.config, options.libs);
@@ -103,7 +104,8 @@ construct = function( options, callback ){
 		// initiate
 		construct.init();
 	}
-
+	// save options
+	Object.extend(construct.options, options);
 };
 
 construct.init = function(){
@@ -149,6 +151,8 @@ construct.lang = function( language ){
 	Object.extend(locale, language);
 };
 
+// options passed in construct through initialization or plugins
+construct.options = {};
 /* Helper methods */
 /* consider prefixing with _  ? */
 
@@ -367,7 +371,7 @@ construct.promise.add(function(){
 });
 
 
-// Add models after dependencies are laoded
+// Add models after dependencies are loaded
 construct.promise.add(function(){
 
 //require(["backbone.app", "jquery.three"], function(){
@@ -461,7 +465,10 @@ construct.promise.add(function(){
 	});
 
 
-	APP.Mesh = View.extend({
+	// in case APP.Mesh has already been defined by a plugin
+	var Mesh = APP.Mesh || View;
+
+	APP.Mesh = Mesh.extend({
 		options: {
 			speed: false,
 			bind: "sync"
