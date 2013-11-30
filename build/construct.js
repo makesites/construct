@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Tue, 12 Nov 2013 10:53:09 GMT)
+ * Version: 0.3.0 (Sat, 30 Nov 2013 03:28:13 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -112,7 +112,8 @@ construct.init = function(){
 	// execute when construct is initialized
 	//console.log("init");
 	// execute any config options passed in the init()
-	construct.promise.resolve();
+	// #10 resolving promises with construct options as an argument
+	construct.promise.resolve( construct.options );
 
 	// initialize APP
 	var app = new APP();
