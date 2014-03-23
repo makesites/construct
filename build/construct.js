@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sat, 30 Nov 2013 03:28:13 GMT)
+ * Version: 0.3.0 (Sun, 23 Mar 2014 23:33:24 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -240,7 +240,8 @@ construct.config = {
 				"backbone",
 				"underscore",
 				"jquery"
-			]
+			],
+			"exports": "APP"
 		},
 		"jquery.three": {
 			"deps": [
