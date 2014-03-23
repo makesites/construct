@@ -35,7 +35,7 @@ construct( options, callback );
 
 On initialization you may include the following options...
 
-* **require** : an array of js libs to be used as dependencies
+* **require** : a require.js configuration object, that will override the default config
 
 
 ## Methods

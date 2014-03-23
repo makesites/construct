@@ -2,13 +2,13 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 23 Mar 2014 23:33:24 GMT)
+ * Version: 0.3.0 (Sun, 23 Mar 2014 23:41:33 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
  * Created by: Makis Tracend (@tracend)
  *
- * @cc_on Copyright © 2013 Makesites.org
+ * @cc_on Copyright © Makesites.org
  * @license Dual-licensed: Mozilla Public License v2.0, GNU Affero General Public License v3.0
  */
 
@@ -85,8 +85,8 @@ construct = function( options, callback ){
 	// fallback
 	options = options || {};
 	// extend default config with supplied config
-	//if( options.require ) construct.config = $.extend( true, options.deps, construct.config);
-	if( options.libs ) Object.extend(construct.config, options.libs);
+	//if( options.require ) construct.config = $.extend( true, construct.config, options.require );
+	if( options.require ) Object.extend(construct.config, options.require);
 
 	if( callback ) construct.callback = callback;
 
