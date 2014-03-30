@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 23 Mar 2014 23:41:33 GMT)
+ * Version: 0.3.0 (Sun, 30 Mar 2014 04:56:51 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -242,6 +242,9 @@ construct.config = {
 				"jquery"
 			],
 			"exports": "APP"
+		},
+		"three-js": {
+			"exports": "THREE"
 		},
 		"jquery.three": {
 			"deps": [
