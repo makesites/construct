@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 30 Mar 2014 04:56:51 GMT)
+ * Version: 0.3.0 (Sun, 30 Mar 2014 06:39:12 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -116,13 +116,25 @@ construct.init = function(){
 	construct.promise.resolve( construct.options );
 
 	// initialize APP
-	var app = new APP();
-	window.app = app;
-	// start backbone history
-	Backbone.history.start();
+	if( construct.options.router ){
+		// async init
+		new APP({ require : construct.options.router }, function( app ){
+			window.app = app; // optional?
+			// start backbone history
+			Backbone.history.start();
+			if( construct.callback ) construct.callback( app );
+		});
 
-	if( construct.callback ) construct.callback( app );
-	//return app;
+	} else {
+		// linear init
+		var app = new APP();
+		window.app = app; // optional?
+		// start backbone history
+		Backbone.history.start();
+		if( construct.callback ) construct.callback( app );
+	}
+
+	return this;
 
 };
 

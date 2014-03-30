@@ -35,7 +35,8 @@ construct( options, callback );
 
 On initialization you may include the following options...
 
-* **require** : a require.js configuration object, that will override the default config
+* **require** : a require.js config object, that will override the default config
+* **router** : the path of a Backbone.js router, to be loaded after all other dependencies
 
 
 ## Methods
