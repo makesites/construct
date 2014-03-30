@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 30 Mar 2014 06:59:27 GMT)
+ * Version: 0.3.0 (Sun, 30 Mar 2014 07:17:22 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -462,10 +462,10 @@ construct.promise.add(function(){
 			// automatic updates
 			// - broadcast updates to objects
 			for( var i in this.objects.attributes ){
-				this.objects.get(i).trigger("update");
+				this.objects.get(i).trigger("update", e);
 			}
 			for( var j in this.layers.attributes ){
-				this.layers.get(j).trigger("update");
+				this.layers.get(j).trigger("update", e);
 			}
 			// user-defined updates
 			this.update( e );
@@ -591,7 +591,7 @@ construct.promise.add(function(){
 			if( this.objects ){
 				// - broadcast updates to objects
 				for( var i in this.objects.attributes ){
-					this.objects.get(i).trigger("update");
+					this.objects.get(i).trigger("update", e);
 				}
 			}
 			// user-defined updates
@@ -876,7 +876,7 @@ construct.promise.add(function(){
 			// automatic updates
 			// - broadcast updates to objects
 			for( var i in this.objects.attributes ){
-				this.objects.get(i).trigger("update");
+				this.objects.get(i).trigger("update", e);
 			}
 			// user-defined updates
 			this.update( e );
