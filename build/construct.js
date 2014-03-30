@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 30 Mar 2014 07:17:22 GMT)
+ * Version: 0.3.0 (Sun, 30 Mar 2014 07:20:23 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -435,8 +435,6 @@ construct.promise.add(function(){
 			return APP.View.prototype.initialize.call( this, options );
 		},
 
-		clock: new THREE.Clock(), // one clock for all $3d?
-
 		// when the 3D environement is ready
 		start: function( $3d ){
 
@@ -452,6 +450,8 @@ construct.promise.add(function(){
 			// automatic startup
 			// - save Three.js instance
 			this.$3d = $3d;
+			this.$3d.clock = new THREE.Clock(), // one clock for all $3d?
+
 			// user-defined startup
 			this.start( $3d );
 		},
