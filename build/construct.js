@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 30 Mar 2014 06:39:12 GMT)
+ * Version: 0.3.0 (Sun, 30 Mar 2014 06:59:27 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -409,10 +409,13 @@ construct.promise.add(function(){
 
 
 	APP.Views.Main3D = APP.View.extend({
+
 		el: ".main",
+
 		options: {
 			renderTarget: "shadow-root"
 		},
+
 		initialize: function( options ){
 			//_.bindAll(this, "");
 			// main container(s)
@@ -431,6 +434,8 @@ construct.promise.add(function(){
 
 			return APP.View.prototype.initialize.call( this, options );
 		},
+
+		clock: new THREE.Clock(), // one clock for all $3d?
 
 		// when the 3D environement is ready
 		start: function( $3d ){
@@ -485,6 +490,7 @@ construct.promise.add(function(){
 	// in case APP.Mesh has already been defined by a plugin
 	var Mesh = APP.Mesh || View;
 
+	// move speed, collission to dynamic mesh...
 	APP.Mesh = Mesh.extend({
 		options: {
 			speed: false,
@@ -623,11 +629,37 @@ construct.promise.add(function(){
 	});
 
 	/* extending Mesh */
+	// a static mesh cannot be updated after init
 	APP.Meshes.Static = APP.Mesh.extend({
 
 	});
 
+	// a dynamic mesh can be updated after init
 	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
+
+		options: {
+			moveStep: 3, // a 0-10 setting
+			rotateStep: 0.5 // 1-0 settting
+		},
+
+		state: {
+			// moving conventions as set by THREE.FlyControls
+			move: {
+				left: 0,
+				right: 0,
+				up: 0,
+				down: 0,
+				forward: 0,
+				back: 0,
+				pitchDown: 0,
+				pitchUp: 0,
+				yawRight: 0,
+				yawLeft: 0,
+				rollRight: 0,
+				rollLeft: 0
+			}
+		},
+
 		initialize: function( options ){
 
 			// containers
@@ -645,21 +677,48 @@ construct.promise.add(function(){
 
 		_self: function( e ){
 			e.parent = (this.object) ? this.object : null;
+		},
+
+		tmpQuaternion: new THREE.Quaternion(),
+		moveVector: new THREE.Vector3( 0, 0, 0 ),
+		rotationVector: new THREE.Vector3( 0, 0, 0 ),
+
+		updateMovementVector: function() {
+
+			this.moveVector.x = ( -this.state.move.left    + this.state.move.right );
+			this.moveVector.y = ( -this.state.move.down    + this.state.move.up );
+			this.moveVector.z = ( -this.state.move.forward + this.state.move.back );
+
+			//console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
+
+		},
+
+		updateRotationVector: function() {
+
+			this.rotationVector.x = ( -this.state.move.pitchDown + this.state.move.pitchUp );
+			this.rotationVector.y = ( -this.state.move.yawRight  + this.state.move.yawLeft );
+			this.rotationVector.z = ( -this.state.move.rollRight + this.state.move.rollLeft );
+
+			//console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
+
 		}
 
 	});
 
-
+	// an avatar has "entity" qualities
 	APP.Meshes.Avatar = APP.Meshes.Dynamic.extend({
+
 	});
 
 
 	/* extending Avatar */
+	// a non-playable character
 	APP.Meshes.NPC = APP.Meshes.Avatar.extend({
 	});
 
-
+	// a playable character
 	APP.Meshes.Player = APP.Meshes.Avatar.extend({
+
 	});
 
 
