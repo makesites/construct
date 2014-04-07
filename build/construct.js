@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 30 Mar 2014 07:20:23 GMT)
+ * Version: 0.3.0 (Mon, 07 Apr 2014 02:00:19 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -482,6 +482,13 @@ construct.promise.add(function(){
 				// trigger start event
 				e.trigger("start");
 			}
+		},
+
+		//onMouseMove
+		mousemove: function( e ){
+			// broadcast updates to player
+			var player = this.objects.get("player");
+			if( player && player.onMouseMove ) player.onMouseMove( e );
 		}
 
 	});
