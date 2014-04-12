@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Mon, 07 Apr 2014 02:00:19 GMT)
+ * Version: 0.3.0 (Sat, 12 Apr 2014 07:03:32 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -408,31 +408,38 @@ construct.promise.add(function(){
 	APP.Actors = {};
 
 
-	APP.Views.Main3D = APP.View.extend({
+	APP.Views.Main3D = View.extend({
 
 		el: ".main",
 
 		options: {
-			renderTarget: "shadow-root"
+			renderTarget: "shadow-root",
+			autoRender: false
 		},
 
 		initialize: function( options ){
-			//_.bindAll(this, "");
+			//
+			_.bindAll(this, "setup");
 			// main container(s)
 			this.objects = new APP.Collections.Objects();
-
 			this.layers = new APP.Models.Layers();
 
-			// create the 3D environment (watch for live updates)
-			if( typeof this.el !== "undefined" )
-				this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
+			if( typeof this.el !== "undefined" ){
+				// initiate $3d with some latency to let the DOM "rest"
+				setTimeout(this.setup, 100);
+			}
 
 			// events
-			$("body").on("update", this.el, _.bind(this._update, this) );
 			this.objects.on("find", _.bind(this._find, this) );
 			this.layers.on("find", _.bind(this._find, this) );
 
-			return APP.View.prototype.initialize.call( this, options );
+			return View.prototype.initialize.call( this, options );
+		},
+
+		// create the 3D environment (watch for live updates)
+		setup: function(){
+			this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
+			$("body").on("update", this.el, _.bind(this._update, this) );
 		},
 
 		// when the 3D environement is ready
@@ -451,6 +458,9 @@ construct.promise.add(function(){
 			// - save Three.js instance
 			this.$3d = $3d;
 			this.$3d.clock = new THREE.Clock(), // one clock for all $3d?
+
+			// now start the rendering
+			this.render();
 
 			// user-defined startup
 			this.start( $3d );
@@ -482,13 +492,6 @@ construct.promise.add(function(){
 				// trigger start event
 				e.trigger("start");
 			}
-		},
-
-		//onMouseMove
-		mousemove: function( e ){
-			// broadcast updates to player
-			var player = this.objects.get("player");
-			if( player && player.onMouseMove ) player.onMouseMove( e );
 		}
 
 	});
