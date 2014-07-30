@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Wed, 30 Jul 2014 22:52:36 GMT)
+ * Version: 0.3.0 (Wed, 30 Jul 2014 23:25:20 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -507,8 +507,12 @@ construct.promise.add(function(){
 	});
 
 
+	// Meshes
+
 	// in case APP.Mesh has already been defined by a plugin
 	var Mesh = APP.Mesh || View;
+
+	var paramsMesh = new APP.Models.Mesh();
 
 	// move speed, collission to dynamic mesh...
 	APP.Mesh = Mesh.extend({
@@ -521,7 +525,8 @@ construct.promise.add(function(){
 			rendered: false
 		},
 
-		params: new APP.Models.Mesh(),
+		// extend existing params is available....
+		params: ( View.prototype.params ) ? View.prototype.params.set( paramsMesh.toJSON() ) : paramsMesh,
 
 		initialize: function( options ){
 			options = options || {};
@@ -750,10 +755,13 @@ construct.promise.add(function(){
 
 	});
 
+	// Sprites
+	var paramsSprite = new APP.Models.Sprite();
 
 	APP.Sprite = View.extend({
 
-		params: new APP.Models.Sprite(),
+		// extend existing params is available....
+		params: ( View.prototype.params ) ? View.prototype.params.set( paramsSprite.toJSON() ) : paramsSprite,
 
 		initialize: function( options ){
 			options = options || {};
