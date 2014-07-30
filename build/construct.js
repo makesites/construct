@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Sun, 27 Jul 2014 10:00:36 GMT)
+ * Version: 0.3.0 (Wed, 30 Jul 2014 08:31:42 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -303,6 +303,14 @@ construct.promise.add(function(){
 		}
 	});
 
+	APP.Models.Sprite = Model.extend({
+		defaults: {
+			position : [0,0,0],
+			rotation : [0,0,0],
+			scale : [1,1,1]
+		}
+	});
+
 
 	APP.Collections.Users = Collection.extend({
 	});
@@ -512,17 +520,15 @@ construct.promise.add(function(){
 		state: {
 			rendered: false
 		},
-/*
-		attributes: function(){
-			return this.data.toJSON();
-		},
-*/
+
+		params: new APP.Models.Mesh(),
+
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
 			if (options.models ) return;
 			// data
-			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
+			if (options.params ) this.params.set( options.params );
 			// find the parent
 			this.trigger("parent");
 			// events
@@ -544,19 +550,19 @@ construct.promise.add(function(){
 		_start: function(){
 			// lookup attributes
 			// - position
-			var position = this.data.get("position");
+			var position = this.params.get("position");
 			var defaultPosition = APP.Models.Mesh.prototype.defaults.position;
 			if( position !== defaultPosition ){
 				this.object.position.set( position[0], position[1], position[2] );
 			}
 			// - rotation
-			var rotation = this.data.get("rotation");
+			var rotation = this.params.get("rotation");
 			var defaultRotation = APP.Models.Mesh.prototype.defaults.rotation;
 			if( rotation !== defaultRotation ){
 				this.object.rotation.set( rotation[0], rotation[1], rotation[2] );
 			}
 			// - scale
-			var scale = this.data.get("scale");
+			var scale = this.params.get("scale");
 			var defaultScale = APP.Models.Mesh.prototype.defaults.scale;
 			if( scale !== defaultScale ){
 				this.object.scale.set( scale[0], scale[1], scale[2] );
@@ -735,19 +741,27 @@ construct.promise.add(function(){
 
 
 	APP.Sprite = View.extend({
+
+		params: new APP.Models.Sprite(),
+
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
 			if (options.models ) return;
 			// data
-			this.data = this.data || options.data || this.model || new APP.Model();
+			if (options.params ) this.params.set( options.params );
 			this.object = options.object;
 
 			// events
 			this.on("update", _.bind(this._update, this));
 			//this.on("start", _.bind(this._start, this));
 			if( this._start ) this._start();
-			//return View.prototype.initialize.call(self, options);
+
+			var self = this;
+			// HACK!!! wait till the parent arrives...
+			setTimeout(function(){
+				return View.prototype.initialize.call(self, options);
+			}, 100);
 		},
 
 		_start: function(){
