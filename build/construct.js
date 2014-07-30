@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Wed, 30 Jul 2014 08:31:42 GMT)
+ * Version: 0.3.0 (Wed, 30 Jul 2014 22:52:36 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -546,6 +546,17 @@ construct.promise.add(function(){
 
 		},
 
+		toJSON: function(){
+			var json = {};
+			//
+			json.data = this._toJSON();
+			json.params = this.params.toJSON();
+			// #43 - adding options to the template data
+			if( this.options.inRender ) json.options = this.options;
+			//
+			return json;
+		},
+
 		// set the initial attributes (once)
 		_start: function(){
 			// lookup attributes
@@ -770,7 +781,20 @@ construct.promise.add(function(){
 
 		_update: function(){
 
+		},
+
+		// merge with APP.Mesh.toJSON ?
+		toJSON: function(){
+			var json = {};
+			//
+			json.data = this._toJSON();
+			json.params = this.params.toJSON();
+			// #43 - adding options to the template data
+			if( this.options.inRender ) json.options = this.options;
+			//
+			return json;
 		}
+
 	});
 
 
