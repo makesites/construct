@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Thu, 31 Jul 2014 00:07:57 GMT)
+ * Version: 0.3.0 (Thu, 31 Jul 2014 06:34:42 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -373,6 +373,9 @@ construct.promise.add(function(){
 			object.on("find", function( e ){
 				self.trigger("find", e);
 			});
+			object.on("lod", function( e ){
+				self.trigger("lod", e);
+			});
 			object.on("remove", _.bind(this._removed, this));
 
 		},
@@ -391,13 +394,20 @@ construct.promise.add(function(){
 			// bubble up events
 			for( var i in objects ){
 				var object = objects[i];
-				object.on("find", _.bind(this.bubble, this) );
+				object.on("find", _.bind(this._bubbleFind, this) );
+				object.on("lod", _.bind(this._bubbleLOD, this) );
 			}
 			return Backbone.Model.prototype.set.apply(this, arguments);
 		},
-		bubble: function( e ){
+
+		_bubbleFind: function( e ){
 			this.trigger("find", e);
+		},
+
+		_bubbleLOD: function( e ){
+			this.trigger("lod", e);
 		}
+
 	});
 
 	//});
@@ -450,6 +460,8 @@ construct.promise.add(function(){
 			// events
 			this.objects.on("find", _.bind(this._find, this) );
 			this.layers.on("find", _.bind(this._find, this) );
+			this.objects.on("lod", _.bind(this._updateLOD, this) );
+			this.layers.on("lod", _.bind(this._updateLOD, this) );
 
 			return View.prototype.initialize.call( this, options );
 		},
@@ -499,6 +511,11 @@ construct.promise.add(function(){
 			this.update( e );
 		},
 
+		_updateLOD: function( object ){
+			if( !this.$3d.active.camera ) return;
+			object.update( this.$3d.active.camera );
+		},
+
 		_find: function( e ){
 			// where is the data id located in relation to this.el
 			var id = (  $(e.el).find("[data-id]").length > 0 ) ? $(e.el).find("[data-id]").attr("data-id") : $(e.el).attr("data-id");
@@ -546,6 +563,9 @@ construct.promise.add(function(){
 			// events
 			this.on("update", _.bind(this._update, this));
 			this.on("start", _.bind(this._start, this));
+
+			// bind class methods
+			_.bindAll(this, '_updateLOD');
 
 			var self = this;
 			// HACK!!! wait till the parent arrives...
@@ -629,6 +649,10 @@ construct.promise.add(function(){
 				// check if position has changed first
 				this.object.position.set( position.x, position.y, position.z );
 			}
+			// update level of detail
+			if(this.object.objects ){
+				this._updateLOD( this.object );
+			}
 			if( this.objects ){
 				// - broadcast updates to objects
 				for( var i in this.objects.attributes ){
@@ -642,6 +666,11 @@ construct.promise.add(function(){
 		update: function( e ){
 			// executed on every tick
 
+		},
+
+		// trigger with debounce!
+		_updateLOD: function(){
+			this.trigger("lod", this.object);
 		},
 
 		remove: function(){
@@ -909,6 +938,7 @@ construct.promise.add(function(){
 			// events
 			this.on("update", _.bind(this._update, this) );
 			this.objects.on("find", _.bind(this._find, this) );
+			this.objects.on("lod", _.bind(this._bubbleLOD, this) );
 			this.objects.on("change", _.bind(this._refresh, this) );
 
 			//this.object = options.object || this.options.object || this.object || APP.Mesh;
@@ -955,6 +985,10 @@ construct.promise.add(function(){
 
 		_find: function( e ){
 			this.trigger("find", e);
+		},
+
+		_bubbleLOD: function( e ){
+			this.trigger("lod", e);
 		}
 
 	});
