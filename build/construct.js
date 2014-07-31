@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Wed, 30 Jul 2014 23:25:20 GMT)
+ * Version: 0.3.0 (Thu, 31 Jul 2014 00:07:57 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -281,6 +281,12 @@ construct.promise.add(function(){
 	var Model = APP.Model || Backbone.Model;
 	var Collection = APP.Collection || Backbone.Collection;
 
+	/* construct-specific params */
+	APP.Models.Params = Backbone.Model.extend({
+		defaults: {
+		}
+	});
+
 	APP.Models.User = Model.extend({
 		defaults: {
 			admin : true
@@ -417,6 +423,8 @@ construct.promise.add(function(){
 	APP.Sprites = {};
 	APP.Actors = {};
 
+	// common objects
+	var params = new APP.Models.Params();
 
 	APP.Views.Main3D = View.extend({
 
@@ -512,8 +520,6 @@ construct.promise.add(function(){
 	// in case APP.Mesh has already been defined by a plugin
 	var Mesh = APP.Mesh || View;
 
-	var paramsMesh = new APP.Models.Mesh();
-
 	// move speed, collission to dynamic mesh...
 	APP.Mesh = Mesh.extend({
 		options: {
@@ -526,13 +532,14 @@ construct.promise.add(function(){
 		},
 
 		// extend existing params is available....
-		params: ( View.prototype.params ) ? View.prototype.params.set( paramsMesh.toJSON() ) : paramsMesh,
+		params: ( View.prototype.params ) ? View.prototype.params.set( params.toJSON() ) : params,
 
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
-			if (options.models ) return;
+			if (options.models ) return; // should this be option.collection?
 			// data
+			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
 			if (options.params ) this.params.set( options.params );
 			// find the parent
 			this.trigger("parent");
@@ -566,19 +573,19 @@ construct.promise.add(function(){
 		_start: function(){
 			// lookup attributes
 			// - position
-			var position = this.params.get("position");
+			var position = this.data.get("position");
 			var defaultPosition = APP.Models.Mesh.prototype.defaults.position;
 			if( position !== defaultPosition ){
 				this.object.position.set( position[0], position[1], position[2] );
 			}
 			// - rotation
-			var rotation = this.params.get("rotation");
+			var rotation = this.data.get("rotation");
 			var defaultRotation = APP.Models.Mesh.prototype.defaults.rotation;
 			if( rotation !== defaultRotation ){
 				this.object.rotation.set( rotation[0], rotation[1], rotation[2] );
 			}
 			// - scale
-			var scale = this.params.get("scale");
+			var scale = this.data.get("scale");
 			var defaultScale = APP.Models.Mesh.prototype.defaults.scale;
 			if( scale !== defaultScale ){
 				this.object.scale.set( scale[0], scale[1], scale[2] );
@@ -755,19 +762,20 @@ construct.promise.add(function(){
 
 	});
 
+
 	// Sprites
-	var paramsSprite = new APP.Models.Sprite();
 
 	APP.Sprite = View.extend({
 
 		// extend existing params is available....
-		params: ( View.prototype.params ) ? View.prototype.params.set( paramsSprite.toJSON() ) : paramsSprite,
+		params: ( View.prototype.params ) ? View.prototype.params.set( params.toJSON() ) : params,
 
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
 			if (options.models ) return;
 			// data
+			this.data = this.data || options.data || this.model || new APP.Models.Sprite();
 			if (options.params ) this.params.set( options.params );
 			this.object = options.object;
 
