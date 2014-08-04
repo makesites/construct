@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Thu, 31 Jul 2014 06:34:42 GMT)
+ * Version: 0.3.0 (Mon, 04 Aug 2014 10:29:19 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -376,6 +376,9 @@ construct.promise.add(function(){
 			object.on("lod", function( e ){
 				self.trigger("lod", e);
 			});
+			object.on("pause", function( e ){
+				self.trigger("pause", e);
+			});
 			object.on("remove", _.bind(this._removed, this));
 
 		},
@@ -445,6 +448,10 @@ construct.promise.add(function(){
 			autoRender: false
 		},
 
+		state: {
+			paused: false
+		},
+
 		initialize: function( options ){
 			//
 			_.bindAll(this, "setup");
@@ -462,6 +469,7 @@ construct.promise.add(function(){
 			this.layers.on("find", _.bind(this._find, this) );
 			this.objects.on("lod", _.bind(this._updateLOD, this) );
 			this.layers.on("lod", _.bind(this._updateLOD, this) );
+			this.objects.on("pause", _.bind(this.togglePause, this) );
 
 			return View.prototype.initialize.call( this, options );
 		},
@@ -527,6 +535,22 @@ construct.promise.add(function(){
 				// trigger start event
 				e.trigger("start");
 			}
+		},
+
+		togglePause: function(){
+			this.state.paused = !this.state.paused; // toggle
+			// update 3d
+			this.$3d.options.paused = this.state.paused;
+			// other events?
+			this.trigger("pause", e);
+		},
+
+		_unPause: function(){
+			this.state.paused = false; // toggle
+			// update 3d
+			this.$3d.options.paused = false;
+			// event
+			this.trigger("unpause");
 		}
 
 	});
