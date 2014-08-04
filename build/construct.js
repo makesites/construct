@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Mon, 04 Aug 2014 10:35:51 GMT)
+ * Version: 0.3.0 (Mon, 04 Aug 2014 10:43:30 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -470,6 +470,7 @@ construct.promise.add(function(){
 			this.objects.on("lod", _.bind(this._updateLOD, this) );
 			this.layers.on("lod", _.bind(this._updateLOD, this) );
 			this.objects.on("pause", _.bind(this.togglePause, this) );
+			this.on("pause", _.bind(this.togglePause, this) );
 
 			return View.prototype.initialize.call( this, options );
 		},
