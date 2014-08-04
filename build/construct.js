@@ -2,7 +2,7 @@
  * @name construct
  * Construct.js : Constructor
  *
- * Version: 0.3.0 (Mon, 04 Aug 2014 10:29:19 GMT)
+ * Version: 0.3.0 (Mon, 04 Aug 2014 10:35:51 GMT)
  * Homepage: https://github.com/makesites/construct
  *
  * @author makesites
@@ -537,12 +537,10 @@ construct.promise.add(function(){
 			}
 		},
 
-		togglePause: function(){
+		togglePause: function( e ){
 			this.state.paused = !this.state.paused; // toggle
 			// update 3d
 			this.$3d.options.paused = this.state.paused;
-			// other events?
-			this.trigger("pause", e);
 		},
 
 		_unPause: function(){
