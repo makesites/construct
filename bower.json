@@ -1,6 +1,22 @@
 {
-  "name": "construct",
-  "version": "0.3.0",
-  "main": ["./build/construct-min.js"],
-  "dependencies": [ "backbone.app", "jquery.three" ]
+	"name": "construct",
+	"version": "0.3.0",
+	"description": "Construct.js",
+	"keywords": [
+			"construct", "webgl", "markup", "declarative", "3d", "web-components"
+	],
+	"repository" : "http://github.com/makesites/construct",
+	"license": "Mozilla Public License v2.0",
+	"ignore": [
+			"**/.*",
+			"node_modules",
+			"bower_components"
+	],
+	"main": "index.html",
+	"dependencies": {
+		"webcomponentsjs": "*",
+		"app" : ">=0.2.0"
+		"backbone.app": "*",
+		"jquery.three": "*"
+	}
 }
