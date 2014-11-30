@@ -1,15 +1,16 @@
 /**
  * @name construct
- * Construct.js : Constructor
+ * Construct.js
  *
- * Version: 0.3.0 (Mon, 04 Aug 2014 10:43:30 GMT)
- * Homepage: https://github.com/makesites/construct
+ * Version: 0.3.0 (Sun, 30 Nov 2014 07:51:45 GMT)
+ * Source: http://github.com/makesites/construct
  *
  * @author makesites
- * Created by: Makis Tracend (@tracend)
+ * Initiated by: Makis Tracend (@tracend)
+ * Distributed through [Makesites.org](http://makesites.org)
  *
- * @cc_on Copyright © Makesites.org
- * @license Dual-licensed: Mozilla Public License v2.0, GNU Affero General Public License v3.0
+ * @cc_on Copyright Â© Makesites.org
+ * @license Released dual-licensed: Mozilla Public License v2.0, GNU Affero General Public License v3.0
  */
 
 (function(){

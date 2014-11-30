@@ -36,7 +36,18 @@ handlebars.registerHelper('license', function(items){
 var package = JSON.parse( fs.readFileSync('package.json', FILE_ENCODING) ); // condition the existance of package.json or component.json...
 var name = package.name;
 // - list files in the lib folder
-var src = libFiles();
+//var src = libFiles();
+var src = [
+	'lib/utils.js',
+	'lib/locale.js',
+	'lib/construct.js',
+	'lib/api.js',
+	'lib/helpers.js',
+	'lib/config.js',
+	'lib/models.js',
+	'lib/views.js',
+	'lib/controllers.js'
+];
 
 // - concatinate all files
 concat({
