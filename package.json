@@ -2,7 +2,7 @@
 	"name" : "construct",
 	"version" : "0.4.0",
 	"author" : "makesites",
-	"description" : "Construct.js",
+	"description" : "WebGL framework using makrup for declarative 3Ds",
 	"homepage" : "https://github.com/makesites/construct",
 	"repository" : "http://github.com/makesites/construct",
 	"licenses": [

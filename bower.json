@@ -1,7 +1,7 @@
 {
 	"name": "construct",
 	"version": "0.4.0",
-	"description": "Construct.js",
+	"description": "WebGL framework using makrup for declarative 3D",
 	"keywords": [
 			"construct", "webgl", "markup", "declarative", "3d", "web-components"
 	],
@@ -15,7 +15,7 @@
 	"main": "index.html",
 	"dependencies": {
 		"webcomponentsjs": "*",
-		"app" : ">=0.2.0"
+		"app" : ">=0.2.0",
 		"backbone.app": "*",
 		"jquery.three": "*"
 	}
