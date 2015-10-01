@@ -31,6 +31,12 @@ As a dependency injection framework, it is assumed that only one instance of the
 construct( options, callback );
 ```
 
+As a custom element it extends a regular div:
+```
+<div is="construct-3d"></div>
+```
+
+
 ## Options
 
 On initialization you may include the following options...

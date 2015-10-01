@@ -31,7 +31,7 @@
 	// Fires when an attribute was added, removed, or updated
 	el.attributeChangedCallback = function(attr, oldVal, newVal) {};
 
-	document.registerElement('x-construct', {
+	document.registerElement('construct-3d', {
 		prototype: el
 	});
 
