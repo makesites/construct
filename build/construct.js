@@ -1,15 +1,15 @@
 /**
  * @name construct
- * Construct.js
+ * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.0 (Sun, 30 Nov 2014 08:03:51 GMT)
+ * Version: 0.4.1 (Fri, 15 Apr 2016 06:56:43 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
  * Initiated by: Makis Tracend (@tracend)
  * Distributed through [Makesites.org](http://makesites.org)
  *
- * @cc_on Copyright Â© Makesites.org
+ * @cc_on Copyright © Makesites.org
  * @license Released dual-licensed: Mozilla Public License v2.0, GNU Affero General Public License v3.0
  */
 
