@@ -2,7 +2,7 @@
  * @name construct
  * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.1 (Fri, 15 Apr 2016 06:56:43 GMT)
+ * Version: 0.4.2 (Fri, 15 Apr 2016 08:02:50 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
@@ -47,27 +47,34 @@ var Promise = function(obj) {
 	};
 };
 
-// - Object extend
-Object.extend = function(destination, source) {
-	for (var property in source) {
-		if (source[property] && source[property].constructor && source[property].constructor === Object) {
-			destination[property] = destination[property] || {};
-			arguments.callee(destination[property], source[property]);
-		} else {
-			destination[property] = source[property];
-		}
-	}
-	return destination;
-};
-
 var utils = {
 	uuid: function(){
 		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 			return v.toString(16);
 		});
+	},
+
+	// Common.js extend method: https://github.com/commons/common.js
+	extend: function(){
+		var objects = Array.prototype.slice.call( arguments ); // to array?
+		var destination = {};
+		for( var obj in objects ){
+			var source = objects[obj];
+			for (var property in source){
+				if (source[property] && source[property].constructor && source[property].constructor === Object) {
+					destination[property] = destination[property] || {};
+					destination[property] = arguments.callee(destination[property], source[property]);
+				} else {
+					destination[property] = source[property];
+				}
+			}
+		}
+		return destination;
 	}
+
 };
+
 /* Language file */
 
 var locale = {
@@ -87,13 +94,13 @@ construct = function( options, callback ){
 	options = options || {};
 	// extend default config with supplied config
 	//if( options.require ) construct.config = $.extend( true, construct.config, options.require );
-	if( options.require ) Object.extend(construct.config, options.require);
+	if( options.require ) utils.extend(config.require, options.require);
 
 	if( callback ) construct.callback = callback;
 
 	if(typeof require != "undefined"){
-		require.config( construct.config );
-		require( construct.config.deps, construct.init);
+		require.config( config.require );
+		require( config.require.deps, construct.init);
 		// set the init method
 		//construct.config.init = construct.init;
 	} else {
@@ -106,7 +113,7 @@ construct = function( options, callback ){
 		construct.init();
 	}
 	// save options
-	Object.extend(construct.options, options);
+	utils.extend(construct.options, options);
 };
 
 construct.init = function(){
@@ -164,11 +171,12 @@ construct.configure = function( fn ){
 // extend language support
 construct.lang = function( language ){
 	// check language structure first...
-	Object.extend(locale, language);
+	utils.extend(locale, language);
 };
 
 // options passed in construct through initialization or plugins
 construct.options = {};
+
 /* Helper methods */
 /* consider prefixing with _  ? */
 
@@ -205,9 +213,21 @@ construct.log = function( type, key ){
 construct.promise = new Promise();
 
 
-// Dependencies
+// setup custom config
+construct.config = function( custom ){
+	utils.extend(config, custom);
+};
 
-construct.config = {
+var config = {
+
+	/* dependency loader */
+	require: {
+		deps: []
+	}
+};
+
+/* OLD: config:
+{
 	"paths": {
 		"jquery": [
 			"//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery"
@@ -269,7 +289,9 @@ construct.config = {
 		}
 	},
 	"deps": ["backbone.app", "jquery.three", "handlebars"]
+
 };
+*/
 
 
 // Add models after dependencies are laoded

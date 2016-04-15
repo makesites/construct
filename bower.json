@@ -1,6 +1,6 @@
 {
 	"name": "construct",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "WebGL framework using markup for declarative 3D",
 	"keywords": [
 			"construct", "webgl", "markup", "declarative", "3d", "web-components"
