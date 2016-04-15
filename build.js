@@ -106,6 +106,9 @@ function minify(srcPath, distPath) {
 		comments : /@name|@author|@cc_on|@url|@license/
 	} });
 
+	// disable gzip
+	return fs.writeFileSync(distPath, min.code, FILE_ENCODING);
+
 	// gzip
 	zlib.gzip(min.code, function (error, result) {
 		if (error) throw error;
