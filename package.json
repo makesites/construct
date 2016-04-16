@@ -21,8 +21,8 @@
 	},
 	"dependencies" : {
 		"commander" : "~0.5",
-		"jshint" : "~0.9",
-		"uglify-js" : "2.3.x",
+		"jshint" : "2.9.1",
+		"uglify-js" : "2.6.2",
 		"hbs" : "~1.0"
 	}
 
