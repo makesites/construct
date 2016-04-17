@@ -102,9 +102,12 @@ function minify(srcPath, distPath) {
 	ast = pro.ast_squeeze(ast);
 	*/
 
-	var min = uglify.minify(srcPath, { compressor: {
-		comments : /@name|@author|@cc_on|@url|@license/
-	} });
+	var min = uglify.minify(srcPath, {
+		mangle: true,
+		output: {
+			comments : /@name|@author|@cc_on|@url|@license/
+		}
+	});
 
 	// disable gzip
 	return fs.writeFileSync(distPath, min.code, FILE_ENCODING);

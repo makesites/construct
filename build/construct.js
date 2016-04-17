@@ -2,7 +2,7 @@
  * @name construct
  * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.2 (Fri, 15 Apr 2016 08:02:50 GMT)
+ * Version: 0.4.3 (Sun, 17 Apr 2016 08:31:32 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
@@ -123,8 +123,11 @@ construct.init = function(){
 	// #10 resolving promises with construct options as an argument
 	construct.promise.resolve( construct.options );
 
+	// stop now if not initializing router
+	if( !config.init.router ) return;
+
 	// initialize APP
-	if( construct.options.require ){
+	if( config.require ){
 		// async init
 		new APP({ require : true }, function( Controller ){
 			var app = new Controller();
@@ -219,7 +222,9 @@ construct.config = function( custom ){
 };
 
 var config = {
-
+	init: {
+		router: false
+	},
 	/* dependency loader */
 	require: {
 		deps: []
@@ -519,7 +524,7 @@ construct.promise.add(function(){
 			// automatic startup
 			// - save Three.js instance
 			this.$3d = $3d;
-			this.$3d.clock = new THREE.Clock(), // one clock for all $3d?
+			this.$3d.clock = new THREE.Clock(); // one clock for all $3d?
 
 			// now start the rendering
 			this.render();
@@ -594,6 +599,10 @@ construct.promise.add(function(){
 			rendered: false
 		},
 
+		events: {
+ 			//"css-filter": "_customFilter"
+		},
+
 		// extend existing params is available....
 		params: ( View.prototype.params ) ? View.prototype.params.set( params.toJSON() ) : params,
 
@@ -612,6 +621,8 @@ construct.promise.add(function(){
 
 			// bind class methods
 			_.bindAll(this, '_updateLOD');
+
+			this._setupEvents(); // events object isn't working...
 
 			var self = this;
 			// HACK!!! wait till the parent arrives...
@@ -736,10 +747,27 @@ construct.promise.add(function(){
 			return View.prototype.remove.call(this);
 		},
 
+		// Placeholders
+		customFilter: function(){
+
+		},
+
 		// Internal
 		// - validate is required in backbone models
 		_validate: function(){
 			return true;
+		},
+
+		// setup events
+		_setupEvents: function(){
+			// events
+			$(this.el).on('css-filter',_.bind(this._customFilter, this) );
+			//this.el.addEventListener('css-filter', function(){ console.log("dodododod"); }, false);
+		},
+
+		_customFilter: function(){
+			// user actions
+			this.customFilter();
 		}
 
 	});
