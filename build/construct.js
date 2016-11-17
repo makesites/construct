@@ -2,7 +2,7 @@
  * @name construct
  * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.3 (Sun, 17 Apr 2016 08:31:32 GMT)
+ * Version: 0.4.4 (Thu, 17 Nov 2016 02:27:58 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
@@ -387,7 +387,7 @@ construct.promise.add(function(){
 		_setupObject: function( object ){
 			var self = this;
 
-			if( object.state.rendered ){
+			if( object.state.get('rendered') ){
 				this.trigger("find", object);
 				this.trigger("parent", object);
 			}
@@ -465,7 +465,12 @@ construct.promise.add(function(){
 	APP.Actors = {};
 
 	// common objects
-	var params = new APP.Models.Params();
+	var params1 = new APP.Models.Params();
+	var state1 = View.prototype.state || new Backbone.Model();
+	// defaults
+	state1.set({
+		paused: false
+	});
 
 	APP.Views.Main3D = View.extend({
 
@@ -476,9 +481,7 @@ construct.promise.add(function(){
 			autoRender: false
 		},
 
-		state: {
-			paused: false
-		},
+		state: state1,
 
 		initialize: function( options ){
 			//
@@ -567,13 +570,13 @@ construct.promise.add(function(){
 		},
 
 		togglePause: function( e ){
-			this.state.paused = !this.state.paused; // toggle
+			this.state.set('paused', !this.state.get('paused') ); // toggle
 			// update 3d
-			this.$3d.options.paused = this.state.paused;
+			this.$3d.options.paused = this.state.get('paused');
 		},
 
 		_unPause: function(){
-			this.state.paused = false; // toggle
+			this.state.set('paused', false); // toggle
 			// update 3d
 			this.$3d.options.paused = false;
 			// event
@@ -587,7 +590,13 @@ construct.promise.add(function(){
 
 	// in case APP.Mesh has already been defined by a plugin
 	var Mesh = APP.Mesh || View;
-
+	// extend existing params is available....
+	var params2 = ( Mesh.prototype.params ) ? Mesh.prototype.params : new APP.Models.Params();
+	var state2 = Mesh.prototype.state || new Backbone.Model();
+	// defaults
+	state2.set({
+		rendered: false
+	});
 	// move speed, collission to dynamic mesh...
 	APP.Mesh = Mesh.extend({
 		options: {
@@ -595,16 +604,13 @@ construct.promise.add(function(){
 			bind: "sync"
 		},
 
-		state: {
-			rendered: false
-		},
+		state: state2,
 
 		events: {
  			//"css-filter": "_customFilter"
 		},
 
-		// extend existing params is available....
-		params: ( View.prototype.params ) ? View.prototype.params.set( params.toJSON() ) : params,
+		params: params2,
 
 		initialize: function( options ){
 			options = options || {};
@@ -680,7 +686,7 @@ construct.promise.add(function(){
 		,*/
 		_postRender: function(){
 			// set state
-			this.state.rendered = true;
+			this.state.set('rendered', true);
 			this.trigger("render");
 
 			return View.prototype._postRender.call(this);
@@ -778,6 +784,26 @@ construct.promise.add(function(){
 
 	});
 
+	var params3 = ( APP.Meshes.Static.prototype.params ) ? APP.Meshes.Static.prototype.params : new APP.Models.Params();
+	// defaults
+	params3.set({
+		// moving conventions as set by THREE.FlyControls
+		move: {
+			left: 0,
+			right: 0,
+			up: 0,
+			down: 0,
+			forward: 0,
+			back: 0,
+			pitchDown: 0,
+			pitchUp: 0,
+			yawRight: 0,
+			yawLeft: 0,
+			rollRight: 0,
+			rollLeft: 0
+		}
+	});
+
 	// a dynamic mesh can be updated after init
 	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
 
@@ -786,23 +812,7 @@ construct.promise.add(function(){
 			rotateStep: 0.5 // 1-0 settting
 		},
 
-		state: {
-			// moving conventions as set by THREE.FlyControls
-			move: {
-				left: 0,
-				right: 0,
-				up: 0,
-				down: 0,
-				forward: 0,
-				back: 0,
-				pitchDown: 0,
-				pitchUp: 0,
-				yawRight: 0,
-				yawLeft: 0,
-				rollRight: 0,
-				rollLeft: 0
-			}
-		},
+		params: params3,
 
 		initialize: function( options ){
 
@@ -828,20 +838,22 @@ construct.promise.add(function(){
 		rotationVector: new THREE.Vector3( 0, 0, 0 ),
 
 		updateMovementVector: function() {
+			var move = this.params.get('move');
 
-			this.moveVector.x = ( -this.state.move.left    + this.state.move.right );
-			this.moveVector.y = ( -this.state.move.down    + this.state.move.up );
-			this.moveVector.z = ( -this.state.move.forward + this.state.move.back );
+			this.moveVector.x = ( -move.left    + move.right );
+			this.moveVector.y = ( -move.down    + move.up );
+			this.moveVector.z = ( -move.forward + move.back );
 
 			//console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
 
 		},
 
 		updateRotationVector: function() {
+			var move = this.params.get('move');
 
-			this.rotationVector.x = ( -this.state.move.pitchDown + this.state.move.pitchUp );
-			this.rotationVector.y = ( -this.state.move.yawRight  + this.state.move.yawLeft );
-			this.rotationVector.z = ( -this.state.move.rollRight + this.state.move.rollLeft );
+			this.rotationVector.x = ( -move.pitchDown + move.pitchUp );
+			this.rotationVector.y = ( -move.yawRight  + move.yawLeft );
+			this.rotationVector.z = ( -move.rollRight + move.rollLeft );
 
 			//console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
 
