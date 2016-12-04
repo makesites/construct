@@ -2,7 +2,7 @@
  * @name construct
  * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.4 (Thu, 17 Nov 2016 02:27:58 GMT)
+ * Version: 0.4.5 (Sun, 04 Dec 2016 12:59:43 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
@@ -464,13 +464,29 @@ construct.promise.add(function(){
 	APP.Sprites = {};
 	APP.Actors = {};
 
-	// common objects
-	var params1 = new APP.Models.Params();
-	var state1 = View.prototype.state || new Backbone.Model();
-	// defaults
-	state1.set({
-		paused: false
-	});
+
+	// Helper methods
+	var setupState = function(){
+		//var state = View.prototype.state || new Backbone.Model();
+		var state = new Backbone.Model();
+		if( typeof this.state == "object" ){
+			// if already instantiated
+			if( this.state.toJSON ) this.state = this.state.toJSON();
+			state.set( this.state );
+		}
+		return state;
+	};
+
+	var setupParams = function(){
+		//var fn = this.parent('name', options);
+		var params = new APP.Models.Params();
+		if(typeof this.params == "object" ){
+			// if already instantiated
+			if( this.params.toJSON ) this.params = this.params.toJSON();
+			params.set( this.params );
+		}
+		return params;
+	};
 
 	APP.Views.Main3D = View.extend({
 
@@ -481,7 +497,9 @@ construct.promise.add(function(){
 			autoRender: false
 		},
 
-		state: state1,
+		state: {
+			paused: false
+		},
 
 		initialize: function( options ){
 			//
@@ -489,6 +507,8 @@ construct.promise.add(function(){
 			// main container(s)
 			this.objects = new APP.Collections.Objects();
 			this.layers = new APP.Models.Layers();
+			this.state = this.setupState();
+			this.params = this.setupParams();
 
 			if( typeof this.el !== "undefined" ){
 				// initiate $3d with some latency to let the DOM "rest"
@@ -511,6 +531,11 @@ construct.promise.add(function(){
 			this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
 			$("body").on("update", this.el, _.bind(this._update, this) );
 		},
+
+		// shims for older Backbone.APP
+		setupParams: setupParams,
+
+		setupState: setupState,
 
 		// when the 3D environement is ready
 		start: function( $3d ){
@@ -590,13 +615,6 @@ construct.promise.add(function(){
 
 	// in case APP.Mesh has already been defined by a plugin
 	var Mesh = APP.Mesh || View;
-	// extend existing params is available....
-	var params2 = ( Mesh.prototype.params ) ? Mesh.prototype.params : new APP.Models.Params();
-	var state2 = Mesh.prototype.state || new Backbone.Model();
-	// defaults
-	state2.set({
-		rendered: false
-	});
 	// move speed, collission to dynamic mesh...
 	APP.Mesh = Mesh.extend({
 		options: {
@@ -604,18 +622,20 @@ construct.promise.add(function(){
 			bind: "sync"
 		},
 
-		state: state2,
-
 		events: {
  			//"css-filter": "_customFilter"
 		},
 
-		params: params2,
+		state: {
+			rendered: false
+		},
 
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
 			if (options.models ) return; // should this be option.collection?
+			this.state = this.setupState();
+			this.params = this.setupParams();
 			// data
 			this.data = this.data || options.data || this.model || new APP.Models.Mesh();
 			if (options.params ) this.params.set( options.params );
@@ -633,9 +653,14 @@ construct.promise.add(function(){
 			var self = this;
 			// HACK!!! wait till the parent arrives...
 			setTimeout(function(){
-				return View.prototype.initialize.call(self, options);
+				return Mesh.prototype.initialize.call(self, options);
 			}, 100);
 		},
+
+		// shims for older Backbone.APP
+		setupParams: setupParams,
+
+		setupState: setupState,
 
 		start: function(){
 
@@ -676,20 +701,30 @@ construct.promise.add(function(){
 			// user defined actions
 			this.start();
 		},
-		/*
-		preRender: function(){
 
+		_preRender: function(){
+			// FIX: if el is empty div, delete it!
+			if( this.el ){
+				var html = $("<body></body>").append( this.el ).html().toString();
+				if( html == "<div></div>" ) delete this.el; // will be recreated in render()
+			}
+			// app-specific actions
+			this.preRender();
 		},
-		render: function(){
 
-		}
-		,*/
+		render: function(){
+			// limit to single render
+			if( this.state.get('rendered') ) return;
+			// continue..
+			return Mesh.prototype.render.call(this);
+		},
+
 		_postRender: function(){
 			// set state
 			this.state.set('rendered', true);
 			this.trigger("render");
 
-			return View.prototype._postRender.call(this);
+			return Mesh.prototype._postRender.call(this);
 		},
 
 		_update: function( e ){
@@ -700,6 +735,8 @@ construct.promise.add(function(){
 				//console.log("render", this);
 				return this.trigger("render");
 			}
+			// FIX: if object is null it was deleted from the $3d environment.
+			if( _.isNull(this.object) ) return this.disable();
 
 			// set the speed of the object
 			if( this.options.speed && this.object ){
@@ -713,7 +750,7 @@ construct.promise.add(function(){
 				this.object.position.set( position.x, position.y, position.z );
 			}
 			// update level of detail
-			if(this.object.objects ){
+			if( this.object && this.object.objects ){
 				this._updateLOD( this.object );
 			}
 			if( this.objects ){
@@ -750,7 +787,15 @@ construct.promise.add(function(){
 			this.$el.removeData().unbind();
 
 			//Remove view from DOM
-			return View.prototype.remove.call(this);
+			return Mesh.prototype.remove.call(this);
+		},
+
+		// delete view logic without, leave the markup
+		disable: function(){
+			// events
+			this.off("update", _.bind(this._update, this));
+			this.off("start", _.bind(this._start, this));
+			//
 		},
 
 		// Placeholders
@@ -784,26 +829,6 @@ construct.promise.add(function(){
 
 	});
 
-	var params3 = ( APP.Meshes.Static.prototype.params ) ? APP.Meshes.Static.prototype.params : new APP.Models.Params();
-	// defaults
-	params3.set({
-		// moving conventions as set by THREE.FlyControls
-		move: {
-			left: 0,
-			right: 0,
-			up: 0,
-			down: 0,
-			forward: 0,
-			back: 0,
-			pitchDown: 0,
-			pitchUp: 0,
-			yawRight: 0,
-			yawLeft: 0,
-			rollRight: 0,
-			rollLeft: 0
-		}
-	});
-
 	// a dynamic mesh can be updated after init
 	APP.Meshes.Dynamic = APP.Meshes.Static.extend({
 
@@ -812,7 +837,23 @@ construct.promise.add(function(){
 			rotateStep: 0.5 // 1-0 settting
 		},
 
-		params: params3,
+		params: {
+			// moving conventions as set by THREE.FlyControls
+			move: {
+				left: 0,
+				right: 0,
+				up: 0,
+				down: 0,
+				forward: 0,
+				back: 0,
+				pitchDown: 0,
+				pitchUp: 0,
+				yawRight: 0,
+				yawLeft: 0,
+				rollRight: 0,
+				rollLeft: 0
+			}
+		},
 
 		initialize: function( options ){
 
@@ -882,13 +923,13 @@ construct.promise.add(function(){
 
 	APP.Sprite = View.extend({
 
-		// extend existing params is available....
-		params: ( View.prototype.params ) ? View.prototype.params.set( params.toJSON() ) : params,
-
 		initialize: function( options ){
 			options = options || {};
 			// FIX: reject collections
 			if (options.models ) return;
+			//
+			this.state = this.setupState();
+			this.params = this.setupParams();
 			// data
 			this.data = this.data || options.data || this.model || new APP.Models.Sprite();
 			if (options.params ) this.params.set( options.params );
@@ -905,6 +946,11 @@ construct.promise.add(function(){
 				return View.prototype.initialize.call(self, options);
 			}, 100);
 		},
+
+		// shims for older Backbone.APP
+		setupParams: setupParams,
+
+		setupState: setupState,
 
 		_start: function(){
 
@@ -1037,7 +1083,7 @@ construct.promise.add(function(){
 			// create new object from blueprint
 			var object = new this.model({
 				parentEl: this.el,
-				renderTarget: this.el,
+				//renderTarget: this.el,
 				//model: model,
 				append: true
 			});
@@ -1080,6 +1126,7 @@ construct.promise.add(function(){
 	});
 
 //});
+
 
 });
 
