@@ -1,6 +1,6 @@
 {
 	"name" : "construct",
-	"version" : "0.4.5",
+	"version" : "0.5.0",
 	"author" : "makesites",
 	"description" : "WebGL framework using markup for declarative 3Ds",
 	"homepage" : "https://github.com/makesites/construct",

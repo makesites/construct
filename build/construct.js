@@ -2,7 +2,7 @@
  * @name construct
  * WebGL framework using markup for declarative 3Ds
  *
- * Version: 0.4.5 (Sun, 04 Dec 2016 12:59:43 GMT)
+ * Version: 0.5.0 (Sat, 20 May 2023 06:52:33 GMT)
  * Source: http://github.com/makesites/construct
  *
  * @author makesites
@@ -316,12 +316,18 @@ construct.promise.add(function(){
 	});
 
 	APP.Models.User = Model.extend({
+		options: {
+			autofetch: false
+		},
 		defaults: {
 			admin : true
 		}
 	});
 
 	APP.Models.Asset = Model.extend({
+		options: {
+			autofetch: false
+		},
 		defaults: {
 			x : 0,
 			y : 0,
@@ -330,6 +336,9 @@ construct.promise.add(function(){
 	});
 
 	APP.Models.Mesh = Model.extend({
+		options: {
+			autofetch: false
+		},
 		defaults: {
 			position : [0,0,0],
 			rotation : [0,0,0],
@@ -338,6 +347,9 @@ construct.promise.add(function(){
 	});
 
 	APP.Models.Sprite = Model.extend({
+		options: {
+			autofetch: false
+		},
 		defaults: {
 			position : [0,0,0],
 			rotation : [0,0,0],
@@ -683,19 +695,19 @@ construct.promise.add(function(){
 			// - position
 			var position = this.data.get("position");
 			var defaultPosition = APP.Models.Mesh.prototype.defaults.position;
-			if( position !== defaultPosition ){
+			if( !_.isUndefined(position) && position !== defaultPosition ){
 				this.object.position.set( position[0], position[1], position[2] );
 			}
 			// - rotation
 			var rotation = this.data.get("rotation");
 			var defaultRotation = APP.Models.Mesh.prototype.defaults.rotation;
-			if( rotation !== defaultRotation ){
+			if( !_.isUndefined(rotation) && rotation !== defaultRotation ){
 				this.object.rotation.set( rotation[0], rotation[1], rotation[2] );
 			}
 			// - scale
 			var scale = this.data.get("scale");
 			var defaultScale = APP.Models.Mesh.prototype.defaults.scale;
-			if( scale !== defaultScale ){
+			if( !_.isUndefined(scale) && scale !== defaultScale ){
 				this.object.scale.set( scale[0], scale[1], scale[2] );
 			}
 			// user defined actions
@@ -1049,11 +1061,11 @@ construct.promise.add(function(){
 		},
 		*/
 		initialize: function( models, options ){
-			//
+			// fallbacks
+			models = models || [];
 			// base objects
 			this.el = this.el || options.el || null;
 			this.objects = new APP.Collections.Objects();
-			//var models = models || [];
 
 			// events
 
@@ -1078,17 +1090,47 @@ construct.promise.add(function(){
 			return APP.Collection.prototype.initialize.call(this, null, options);
 		},
 
-		add: function( model ){
-			model = model || {};
+		add: function( data ){
+			data = data || {};
+			// treat a collection update differently
+			if( data.models ) return this.addCollection( data );
 			// create new object from blueprint
-			var object = new this.model({
+			var object = new this.object({
 				parentEl: this.el,
 				//renderTarget: this.el,
-				//model: model,
 				append: true
 			});
 			this.objects.add( object );
+			// save data
+			data.id = object._name || object.id || null;
+			// exit now if no id is
+			var model = new Backbone.Model(data);
+			// set the data in the collection
+			return Backbone.Collection.prototype.add.call(this, model);
+		},
 
+		addCollection: function( collection ){
+			var data = collection.toJSON(); // collection not this?
+			var models = this.models;
+			for( var i in data ){
+				//console.log("data[i]", data[i], i, this.at(i) );
+				// get the model from the existing collection
+				// if there's an id match that, otherwise match position
+				var id = this._matchData(data[i], i);
+				if( id ) data[i].id = id;
+
+				var model = ( id ) ? this.get(id) : this.at(i);
+
+				if( model ){
+					// update the existing collection
+					model.set( data[i] ); // silent?
+				} else {
+					//  create a new model
+					this.set( data[i], { merge: false, add: true, remove: false });
+				}
+			}
+			// update models
+			//this.set( data.models );
 		},
 
 		update: function( e ){
@@ -1109,6 +1151,16 @@ construct.promise.add(function(){
 			// user-defined updates
 			this.update( e );
 		},
+
+		// match data with an object
+		_matchData: function(data, index){
+			var lookupID = ( data.id );
+			var ids = Object.keys( this.objects.toJSON() );
+			if( data.id && ids.indexOf(data.id) > 0 ) return data.id;
+			if( ids[index] ) return ids[index];
+			return null; // new model?
+		},
+
 		// when the objects collection has changed:
 		_refresh: function( e ){
 			// user defined
