@@ -32,7 +32,8 @@
 	el.attributeChangedCallback = function(attr, oldVal, newVal) {};
 
 	document.registerElement('construct-3d', {
-		prototype: el
+		prototype: el,
+		extends: 'div'
 	});
 
 }());
